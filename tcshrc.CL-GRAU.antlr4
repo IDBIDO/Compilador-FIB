@@ -1,0 +1,14 @@
+# set CL-GRAU paths for ANTLR v4
+
+# To set it permanently for future sessions, do:
+#     cat $HOME/assig/cl/tcshrc.CL-GRAU.antlr4 >> ~/.tcshrc && source ~/.tcshrc
+
+setenv ANTLR4_ROOT $HOME/assig/cl/runtime
+
+if ( $?CLASSPATH ) then
+    setenv CLASSPATH ".:$ANTLR4_ROOT/lib/antlr-4.9.2-complete.jar:$CLASSPATH"
+else
+    setenv CLASSPATH ".:$ANTLR4_ROOT/lib/antlr-4.9.2-complete.jar"
+endif
+
+setenv LD_LIBRARY_PATH $ANTLR4_ROOT/lib

@@ -1,0 +1,18 @@
+# CL-GRAU (antlr3): Create a directory to store the antlr3 libraries
+#                   and scripts. Define an environment variable called
+#                   ANTLR3 with the path of the new directory.
+setenv ANTLR3 ${HOME}/antlr3
+
+# CL-GRAU (antlr3): Include $ANTLR3 in your PATH
+setenv PATH ${ANTLR3}:${PATH}
+
+# CL-GRAU (antlr3): Include the antlr3 and antlrworks libraries (and
+#                   the current directory '.') in your classpath.
+if (${?CLASSPATH}) then
+  setenv CLASSPATH .:${ANTLR3}/antlr-3.4-complete.jar:${ANTLR3}/antlrworks-1.4.3.jar:${CLASSPATH}
+else
+  setenv CLASSPATH .:${ANTLR3}/antlr-3.4-complete.jar:${ANTLR3}/antlrworks-1.4.3.jar
+endif
+
+# CL-GRAU (Asl)
+setenv PATH ${HOME}/CL-GRAU/Asl/bin:${PATH}

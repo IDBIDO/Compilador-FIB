@@ -1,0 +1,6 @@
+#! /bin/bash
+
+ANTLR_ROOT=$HOME/assig/cl/runtime
+
+export CLASSPATH=".:$ANTLR_ROOT/lib/antlr-4.9.2-complete.jar:$CLASSPATH"
+java -jar $ANTLR_ROOT/lib/antlr-4.9.2-complete.jar "$@"
