@@ -124,6 +124,20 @@ antlrcpp::Any SymbolsVisitor::visitType(AslParser::TypeContext *ctx) {
     TypesMgr::TypeId t = Types.createIntegerTy();
     putTypeDecor(ctx, t);
   }
+  else if (ctx->BOOL()) {
+    TypesMgr::TypeId t = Types.createBooleanTy();
+    putTypeDecor(ctx, t);
+  }
+  else if (ctx ->FLOAT()) {
+    TypesMgr::TypeId t = Types.createFloatTy();
+    putTypeDecor(ctx, t);
+  }
+  else if (ctx->CHAR()) {
+    TypesMgr::TypeId t = Types.createCharacterTy();
+    putTypeDecor(ctx, t);
+  } 
+
+
   DEBUG_EXIT();
   return 0;
 }
@@ -226,6 +240,8 @@ SymTable::ScopeId SymbolsVisitor::getScopeDecor(antlr4::ParserRuleContext *ctx) 
   return Decorations.getScope(ctx);
 }
 TypesMgr::TypeId SymbolsVisitor::getTypeDecor(antlr4::ParserRuleContext *ctx) {
+
+
   return Decorations.getType(ctx);
 }
 

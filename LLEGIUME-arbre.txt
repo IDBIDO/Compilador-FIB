@@ -50,3 +50,14 @@ etx->expr().size();
 stmt: 
     ID '=' expr NEWLINE
     IF expr THEN stmt ENDIF
+
+----------------------------------------------------
+////////////
+PRACTICA
+////////////
+
+compilar: 
+./asl ../examples/jpbasic_chkt_01.asl
+
+TERROR -> tipus que no se
+

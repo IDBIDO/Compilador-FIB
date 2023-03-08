@@ -54,7 +54,7 @@
 
 
 int main(int argc, const char* argv[]) {
-  // check the correct use of the program
+  // check the correct use of the program  
   if (argc > 2) {
     std::cout << "Usage: ./main [<file>]" << std::endl;
     return EXIT_FAILURE;
@@ -95,7 +95,7 @@ int main(int argc, const char* argv[]) {
   // print the parse tree (for debugging purposes)
   std::cout << tree->toStringTree(&parser) << std::endl;
 
-  return EXIT_SUCCESS;
+  //return EXIT_SUCCESS;
 
   // auxililary classes we are going to need to store information while
   // traversing the tree. They are described below in this document
