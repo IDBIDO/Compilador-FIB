@@ -39,7 +39,7 @@
 #include <string>
 
 // uncomment the following line to enable debugging messages with DEBUG*
-// #define DEBUG_BUILD
+ //#define DEBUG_BUILD
 #include "../common/debug.h"
 
 // using namespace std;
@@ -282,6 +282,7 @@ antlrcpp::Any TypeCheckVisitor::visitRelational(AslParser::RelationalContext *ct
 
 antlrcpp::Any TypeCheckVisitor::visitValue(AslParser::ValueContext *ctx) {
   DEBUG_ENTER();
+  TypesMgr::TypeId t;
   if (ctx->INTVAL()) t = Types.createIntegerTy();
   else if (ctx->CHARVAL()) t = Types.createCharacterTy();
   else if (ctx->FLOATVAL()) t = Types.createFloatTy();

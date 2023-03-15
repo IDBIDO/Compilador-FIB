@@ -52,12 +52,33 @@ stmt:
     IF expr THEN stmt ENDIF
 
 ----------------------------------------------------
-////////////
-PRACTICA
-////////////
+///////////////////////////////////////////////////
+///////////////////  PRACTICA  ///////////////////
+/////////////////////////////////////////////////
 
 compilar: 
 ./asl ../examples/jpbasic_chkt_01.asl
 
 TERROR -> tipus que no se
+
+COMANDOS AUXILIALES: 
+cat -n ../examples/jp_chkt_01.asl
+
+
+MANUAL y DEFINICION: https://www.cs.upc.edu/~cl/practica/modules.html
+
+
+-------------------------------------------------------
+
+
+main: 
+
+TypeCheckVisitor: guarda el tipo de datos del programa
+
+SymbolsVisitor: guarda el identificador, el contexto del id
+y con que tipo de datos esta asociados
+
+CodeGenVisitor: 
+
+-------------------------------------------------------
 

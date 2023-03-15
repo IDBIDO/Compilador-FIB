@@ -114,10 +114,12 @@ antlrcpp::Any SymbolsVisitor::visitVariable_decl(AslParser::Variable_declContext
     else {
       TypesMgr::TypeId t1 = getTypeDecor(ctx->type());
       Symbols.addLocalVar(ident, t1);
+    }
   }
   DEBUG_EXIT();
   return 0;
-}
+  }
+
 
 antlrcpp::Any SymbolsVisitor::visitType(AslParser::TypeContext *ctx) {
   DEBUG_ENTER();

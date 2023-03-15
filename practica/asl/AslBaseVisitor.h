@@ -43,6 +43,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitWhileStmt(AslParser::WhileStmtContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitIfStmt(AslParser::IfStmtContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -60,6 +64,10 @@ public:
   }
 
   virtual antlrcpp::Any visitWriteString(AslParser::WriteStringContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitReturnStmt(AslParser::ReturnStmtContext *ctx) override {
     return visitChildren(ctx);
   }
 
