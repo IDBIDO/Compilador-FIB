@@ -136,13 +136,26 @@ antlrcpp::Any TypeCheckVisitor::visitAssignStmt(AslParser::AssignStmtContext *ct
   return 0;
 }
 
-antlrcpp::Any TypeCheckVisitor::visitIfStmt(AslParser::IfStmtContext *ctx) {
+antlrcpp::Any TypeCheckVisitor::visitWhileStmt(AslParser::WhileStmtContext *ctx) {
   DEBUG_ENTER();
   visit(ctx->expr());
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr());
   if ((not Types.isErrorTy(t1)) and (not Types.isBooleanTy(t1)))
     Errors.booleanRequired(ctx);
   visit(ctx->statements());
+  DEBUG_EXIT();
+  return 0;
+}
+
+antlrcpp::Any TypeCheckVisitor::visitIfStmt(AslParser::IfStmtContext *ctx) {
+  DEBUG_ENTER();
+  visit(ctx->expr());
+  TypesMgr::TypeId t1 = getTypeDecor(ctx->expr());
+  if ((not Types.isErrorTy(t1)) and (not Types.isBooleanTy(t1)))
+    Errors.booleanRequired(ctx);
+  visit(ctx->statements(0));
+  if (ctx->ELSE()) // always?
+    visit(ctx->statements(1));
   DEBUG_EXIT();
   return 0;
 }
@@ -203,19 +216,9 @@ antlrcpp::Any TypeCheckVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx)
 
 antlrcpp::Any TypeCheckVisitor::visitParen(AslParser::ParenContext *ctx) {
   DEBUG_ENTER();
-  // visit(ctx->expr(0));
-  // TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
-  // visit(ctx->expr(1));
-  // TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
-  // if (((not Types.isErrorTy(t1)) and (not Types.isNumericTy(t1)) ) or
-  //     ((not Types.isErrorTy(t2)) and (not Types.isNumericTy(t2))) or 
-  // )
-  //   Errors.incompatibleOperator(ctx->op);
-
   visit(ctx->expr());
   putTypeDecor(ctx, getTypeDecor(ctx->expr()));
   putIsLValueDecor(ctx, false);   // no es una tipus asignable
-
   DEBUG_EXIT();
   return 0;
 }
@@ -231,7 +234,11 @@ antlrcpp::Any TypeCheckVisitor::visitArithmetic(AslParser::ArithmeticContext *ct
       ((not Types.isErrorTy(t2)) and (not Types.isNumericTy(t2)) and (not Types.isFloatTy(t2)) ) 
   )
     Errors.incompatibleOperator(ctx->op);
-  TypesMgr::TypeId t = Types.createIntegerTy();
+  TypesMgr::TypeId t;
+  if (Types.isFloatTy(t1) || Types.isFloatTy(t2))
+      t = Types.createFloatTy();
+  else
+      t = Types.createIntegerTy();
   putTypeDecor(ctx, t);       // operacion de aritmetic sempre es de un aritmetic
   putIsLValueDecor(ctx, false);   // no es una tipus asignable
   DEBUG_EXIT();
@@ -275,22 +282,12 @@ antlrcpp::Any TypeCheckVisitor::visitRelational(AslParser::RelationalContext *ct
 
 antlrcpp::Any TypeCheckVisitor::visitValue(AslParser::ValueContext *ctx) {
   DEBUG_ENTER();
-
-  if (ctx-> INTVAL()) {
-    TypesMgr::TypeId t = Types.createIntegerTy();
-    putTypeDecor(ctx, t);
-    putIsLValueDecor(ctx, false);
-  } else if (ctx-> FLOATVAL()) {
-    TypesMgr::TypeId t = Types.createFloatTy();
-    putTypeDecor(ctx, t);
-    putIsLValueDecor(ctx, false);
-  } else if (ctx -> CHARVAL()) {
-    TypesMgr::TypeId t = Types.createCharacterTy();
-    putTypeDecor(ctx, t);
-    putIsLValueDecor(ctx, false);
-  }
-
-
+  if (ctx->INTVAL()) t = Types.createIntegerTy();
+  else if (ctx->CHARVAL()) t = Types.createCharacterTy();
+  else if (ctx->FLOATVAL()) t = Types.createFloatTy();
+  else if (ctx->BOOLVAL()) t = Types.createBooleanTy();
+  putTypeDecor(ctx, t);
+  putIsLValueDecor(ctx, false);
   DEBUG_EXIT();
   return 0;
 }
