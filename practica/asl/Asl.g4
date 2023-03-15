@@ -63,8 +63,10 @@ statements
 statement
           // Assignment
         : left_expr ASSIGN expr ';'           # assignStmt
+          // A while loop  with a bool expresion and some statements
+        | WHILE expr DO statements ENDWHILE    # whileStmt
           // if-then-else statement (else is optional)
-        | IF expr THEN statements ENDIF       # ifStmt
+        | IF expr THEN statements (ELSE statements)? ENDIF       # ifStmt
           // A function/procedure call has a list of arguments in parenthesis (possibly empty)
         | ident '(' ')' ';'                   # procCall
           // Read a variable
@@ -73,6 +75,7 @@ statement
         | WRITE expr ';'                      # writeExpr
           // Write a string
         | WRITE STRING ';'                    # writeString
+        | RETURN ';'                          # returnStmt
         ;
 
 // Grammar for left expressions (l-values in C++)
@@ -82,14 +85,14 @@ left_expr
 
 // Grammar for expressions with boolean, relational and aritmetic operators
 
-expr    : op=(SUB|PLUS|NOT) expr                       # unary
+expr    : op=(SUB|PLUS|NOT) expr                    # unary
         | expr op=(MUL|DIV) expr                    # arithmetic
         | expr op=(PLUS|SUB) expr                   # arithmetic
         | expr op=(EQUAL|NEQ|GT|LT|GE|LE) expr      # relational
         | expr op=AND expr                          #logic    
         | expr op=OR expr                           #logic
         | LPAR expr RPAR                            #paren
-        | (INTVAL|FLOATVAL|CHARVAL)                                    # value
+        | (INTVAL|FLOATVAL|BOOLVAL|CHARVAL)         # value
         | ident                                     # exprIdent
         ;
 
@@ -132,10 +135,18 @@ IF        : 'if' ;
 THEN      : 'then' ;
 ELSE      : 'else' ;
 ENDIF     : 'endif' ;
+
+WHILE     : 'while' ;
+DO        : 'do' ;
+ENDWHILE  : 'endwhile' ;
+
+RETURN    : 'return' ;
+
 FUNC      : 'func' ;
 ENDFUNC   : 'endfunc' ;
 READ      : 'read' ;
 WRITE     : 'write' ;
+BOOLVAL   : 'true'|'false' ;
 ID        : ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
 INTVAL    : ('0'..'9')+ ;
 FLOATVAL  : ('0'..'9')+ '.' ('0'..'9')+;
