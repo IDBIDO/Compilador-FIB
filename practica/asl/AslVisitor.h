@@ -23,6 +23,8 @@ public:
 
     virtual antlrcpp::Any visitFunction(AslParser::FunctionContext *context) = 0;
 
+    virtual antlrcpp::Any visitParams(AslParser::ParamsContext *context) = 0;
+
     virtual antlrcpp::Any visitDeclarations(AslParser::DeclarationsContext *context) = 0;
 
     virtual antlrcpp::Any visitVariable_decl(AslParser::Variable_declContext *context) = 0;

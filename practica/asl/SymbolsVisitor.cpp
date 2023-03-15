@@ -42,7 +42,7 @@
 #include <cstddef>    // std::size_t
 
 // uncomment the following line to enable debugging messages with DEBUG*
-// #define DEBUG_BUILD
+ #define DEBUG_BUILD
 #include "../common/debug.h"
 
 // using namespace std;
@@ -80,24 +80,30 @@ antlrcpp::Any SymbolsVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   SymTable::ScopeId sc = Symbols.pushNewScope(funcName);
   putScopeDecor(ctx, sc);
   visit(ctx->declarations());
-  // Symbols.print();
+   Symbols.print();
   Symbols.popScope();
   std::string ident = ctx->ID()->getText();
   if (Symbols.findInCurrentScope(ident)) {
     Errors.declaredIdent(ctx->ID());
   }
   else {
-    int id_size = ctx->ID().size();
-    int type_size = ctx->type().size();
-    if (id_size == type_size) {   
-      
-    }
-    else {
-      std::vector<TypesMgr::TypeId> lParamsTy;
-      TypesMgr::TypeId tRet = Types.createVoidTy();
-      TypesMgr::TypeId tFunc = Types.createFunctionTy(lParamsTy, tRet);
-      Symbols.addFunction(ident, tFunc);
-    }
+    //int id_size = ctx->ID().size();
+    //int type_size = ctx->type().size();
+
+    TypesMgr::TypeId tRet; // get RETURN type
+    if(ctx->type() != NULL) {
+      tRet = getTypeDecor(ctx->type());
+    } else tRet = Types.createVoidTy();
+
+    // get Param types
+    std::vector<TypesMgr::TypeId> lParamsTy; // PARAMETER types
+    for (auto i : ctx->params()->type()) {
+      lParamsTy.push_back(getTypeDecor(i));
+    } 
+
+    TypesMgr::TypeId tFunc = Types.createFunctionTy(lParamsTy, tRet);
+    Symbols.addFunction(ident, tFunc);
+    
   }
   DEBUG_EXIT();
   return 0;
