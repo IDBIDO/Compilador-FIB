@@ -45,8 +45,6 @@ public:
 
     virtual antlrcpp::Any visitWriteString(AslParser::WriteStringContext *context) = 0;
 
-    virtual antlrcpp::Any visitReturnStmt(AslParser::ReturnStmtContext *context) = 0;
-
     virtual antlrcpp::Any visitLeft_expr(AslParser::Left_exprContext *context) = 0;
 
     virtual antlrcpp::Any visitParen(AslParser::ParenContext *context) = 0;

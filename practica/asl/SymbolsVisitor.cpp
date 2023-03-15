@@ -87,10 +87,17 @@ antlrcpp::Any SymbolsVisitor::visitFunction(AslParser::FunctionContext *ctx) {
     Errors.declaredIdent(ctx->ID());
   }
   else {
-    std::vector<TypesMgr::TypeId> lParamsTy;
-    TypesMgr::TypeId tRet = Types.createVoidTy();
-    TypesMgr::TypeId tFunc = Types.createFunctionTy(lParamsTy, tRet);
-    Symbols.addFunction(ident, tFunc);
+    int id_size = ctx->ID().size();
+    int type_size = ctx->type().size();
+    if (id_size == type_size) {   
+      
+    }
+    else {
+      std::vector<TypesMgr::TypeId> lParamsTy;
+      TypesMgr::TypeId tRet = Types.createVoidTy();
+      TypesMgr::TypeId tFunc = Types.createFunctionTy(lParamsTy, tRet);
+      Symbols.addFunction(ident, tFunc);
+    }
   }
   DEBUG_EXIT();
   return 0;
