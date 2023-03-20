@@ -1,0 +1,49 @@
+Type Manager
+- guarda informacion de los tipos existentes en el programa. 
+- tipos basicos, tipos array...
+? que es el TypeId
+? 
+
+TreeDecoration
+- asociar informacion a ciertos nodos de un arbol
+- hay que guardar: 
+    * el tipo de nodo 
+    * si el nodo es left-value 
+    * que capa pertenece el nodo 
+?bool b = getIsLValueDecor(ctx->ident());  que hace esta funcion
+? que diferencia que entre Types.NumericTy() and Types.IntergerTy()
+
+? prueba 05 < Line 3:2 error: Left expression of assignment is not referenceable.
+7d5
+< Line 6:2 error: Left expression of assignment is not referenceable.
+
+
+
+
+expr    : op=(SUB|PLUS|NOT) expr                    # unary
+        | expr op=(MUL|DIV) expr                    # arithmetic
+        | expr op=(PLUS|SUB) expr                   # arithmetic
+        | expr op=(EQUAL|NEQ|GT|LT|GE|LE) expr      # relational
+        | expr op=AND expr                          #logic    
+        | expr op=OR expr                           #logic
+        | LPAR expr RPAR                            #paren
+        | (INTVAL|FLOATVAL|BOOLVAL|CHARVAL)         # value
+        | ident ('[' expr ']')                      # array_acess
+        | ident                                     # exprIdent
+        ;
+
+
+En TypeCheckVisitor hay visitor para cada una de los label #, para visitar
+ tengo que hacer visit(ctx-> ident()), esto me dirige al visitor de ident: exprIdent.
+ si hago visit(ctx-> expr()), que hace, recorre todo en busca de un visitor que encaje con expr?
+
+
+
+Trucos: 
+
+1. Implementar TypeCheckVisitor:
+    - analizar la el sintaxis y visitar si los tipos coinciden
+      putTypeDecor(ctx, tElem);
+      putIsLValueDecor(ctx, true);
+
+

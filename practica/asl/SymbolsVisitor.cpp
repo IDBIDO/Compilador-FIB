@@ -42,7 +42,7 @@
 #include <cstddef>    // std::size_t
 
 // uncomment the following line to enable debugging messages with DEBUG*
- #define DEBUG_BUILD
+ //#define DEBUG_BUILD
 #include "../common/debug.h"
 
 // using namespace std;
@@ -58,6 +58,15 @@ SymbolsVisitor::SymbolsVisitor(TypesMgr       & Types,
   Decorations{Decorations},
   Errors{Errors} {
 }
+
+/*
+visitProgram
+visitFunction
+visitDeclarations
+
+
+*/
+
 
 // Methods to visit each kind of node:
 //
@@ -79,8 +88,12 @@ antlrcpp::Any SymbolsVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   std::string funcName = ctx->ID()->getText();
   SymTable::ScopeId sc = Symbols.pushNewScope(funcName);
   putScopeDecor(ctx, sc);
+
+  
+  visit(ctx->params());     // visitar los parametros de la funcion
   visit(ctx->declarations());
-   Symbols.print();
+
+  //Symbols.print();
   Symbols.popScope();
   std::string ident = ctx->ID()->getText();
   if (Symbols.findInCurrentScope(ident)) {
@@ -91,8 +104,8 @@ antlrcpp::Any SymbolsVisitor::visitFunction(AslParser::FunctionContext *ctx) {
     //int type_size = ctx->type().size();
 
     TypesMgr::TypeId tRet; // get RETURN type
-    if(ctx->type() != NULL) {
-      tRet = getTypeDecor(ctx->type());
+    if(ctx->type() != NULL) {     // ha especificado tipo de retorno
+      tRet = getTypeDecor(ctx->type());   // devuelve el tipo
     } else tRet = Types.createVoidTy();
 
     // get Param types
@@ -100,11 +113,31 @@ antlrcpp::Any SymbolsVisitor::visitFunction(AslParser::FunctionContext *ctx) {
     for (auto i : ctx->params()->type()) {
       lParamsTy.push_back(getTypeDecor(i));
     } 
-
+    
     TypesMgr::TypeId tFunc = Types.createFunctionTy(lParamsTy, tRet);
     Symbols.addFunction(ident, tFunc);
     
   }
+  DEBUG_EXIT();
+  return 0;
+}
+
+antlrcpp::Any SymbolsVisitor::visitParams(AslParser::ParamsContext *ctx) {
+  DEBUG_ENTER();
+
+  for (size_t i = 0; i < ctx->ID().size(); ++i) {
+    visit(ctx->type(i));   // creara un el tipo correspondiente
+    std::string ident = ctx->ID(i)->getText();    // id de la variable
+    if (Symbols.findInCurrentScope(ident)) {
+      Errors.declaredIdent(ctx->ID(i));
+    }
+    else {
+      TypesMgr::TypeId t1 = getTypeDecor(ctx->type(i));
+      Symbols.addLocalVar(ident, t1);
+    }
+  }
+
+
   DEBUG_EXIT();
   return 0;
 }

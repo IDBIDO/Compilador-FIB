@@ -51,6 +51,10 @@ public:
 
     virtual antlrcpp::Any visitParen(AslParser::ParenContext *context) = 0;
 
+    virtual antlrcpp::Any visitFunction_call(AslParser::Function_callContext *context) = 0;
+
+    virtual antlrcpp::Any visitArray_acess(AslParser::Array_acessContext *context) = 0;
+
     virtual antlrcpp::Any visitExprIdent(AslParser::ExprIdentContext *context) = 0;
 
     virtual antlrcpp::Any visitArithmetic(AslParser::ArithmeticContext *context) = 0;

@@ -93,7 +93,7 @@ int main(int argc, const char* argv[]) {
   }
 
   // print the parse tree (for debugging purposes)
-  std::cout << tree->toStringTree(&parser) << std::endl;
+  //std::cout << tree->toStringTree(&parser) << std::endl;
 
   //return EXIT_SUCCESS;
 
@@ -115,7 +115,7 @@ int main(int argc, const char* argv[]) {
   typecheck.visit(tree);
 
   if (errors.getNumberOfSemanticErrors() > 0) {
-    std::cout << "There are semantic errors: no code generated." << std::endl;
+    //std::cout << "There are semantic errors: no code generated." << std::endl;
     return EXIT_FAILURE;
   }
 

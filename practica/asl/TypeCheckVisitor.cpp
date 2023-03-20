@@ -203,13 +203,48 @@ antlrcpp::Any TypeCheckVisitor::visitWriteExpr(AslParser::WriteExprContext *ctx)
 //   return r;
 // }
 
+//  ident ('[' expr ']')?     Es tipo asignacion
 antlrcpp::Any TypeCheckVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx) {
   DEBUG_ENTER();
-  visit(ctx->ident());
-  TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
-  putTypeDecor(ctx, t1);
-  bool b = getIsLValueDecor(ctx->ident());
+
+  visit(ctx->ident());  // mirar si existe tal identificador en el stack
+  TypesMgr::TypeId tId = getTypeDecor(ctx->ident());   // get ident type
+
+  bool b = getIsLValueDecor(ctx->ident());    // ???
+
+  bool knowArrayType = true;
+
+  if (ctx->expr()) {    // se trata de un array
+    visit(ctx->expr());     // mirar si la expresion es correcta
+    
+    TypesMgr::TypeId tIndex = getTypeDecor(ctx->expr());
+    
+    // comprobar tId: no es un tipo error, pero tampoco es del tipo array
+    if (not Types.isErrorTy(tId) and not Types.isArrayTy(tId)) {    
+      Errors.nonArrayInArrayAccess(ctx);
+      b = false;    // no sabemos que es, no poner que es left value decor
+      knowArrayType = false;
+    }
+
+    // comprobar tIndex: no es un tipo error, pro tampoco es del tipo integer
+    if ((not Types.isErrorTy(tIndex)) and (not Types.isIntegerTy(tIndex)))   {
+      Errors.nonIntegerIndexInArrayAccess(ctx->expr());
+
+    }
+
+    if (knowArrayType) tId = Types.getArrayElemType(tId);
+
+
+  }
+
+
+
+  putTypeDecor(ctx, tId);
+  
   putIsLValueDecor(ctx, b);
+
+
+
   DEBUG_EXIT();
   return 0;
 }
@@ -304,11 +339,39 @@ antlrcpp::Any TypeCheckVisitor::visitExprIdent(AslParser::ExprIdentContext *ctx)
   return 0;
 }
 
+antlrcpp::Any TypeCheckVisitor::visitArray_acess(AslParser::Array_acessContext *ctx) {
+  DEBUG_ENTER();
+  visit(ctx-> ident());   // comprobar si existe el ident
+  visit(ctx-> expr());    //
+
+  TypesMgr::TypeId tID = getTypeDecor(ctx->ident());  // tipo de nodo de ident
+  TypesMgr::TypeId tIndex = getTypeDecor(ctx->expr());    // tipo de nodo de tIndex
+  TypesMgr::TypeId tElem = Types.createErrorTy();   //tipo Err
+
+  //mirar si tID y tIndex es correcto
+
+  if (not Types.isErrorTy(tID)) {   // tID no es tipo Err
+    if (not Types.isArrayTy(tID))   Errors.nonArrayInArrayAccess(ctx);
+    else tElem = Types.getArrayElemType(tID);
+  }
+
+  if (not Types.isErrorTy(tIndex) and not Types.isIntegerTy(tIndex)) {
+    Errors.nonIntegerIndexInArrayAccess(ctx->expr());
+  }
+
+  putTypeDecor(ctx, tElem);
+  putIsLValueDecor(ctx, true);
+
+
+  DEBUG_EXIT();
+  return 0;
+}
+
 antlrcpp::Any TypeCheckVisitor::visitIdent(AslParser::IdentContext *ctx) {
   DEBUG_ENTER();
   std::string ident = ctx->getText();
-  if (Symbols.findInStack(ident) == -1) {
-    Errors.undeclaredIdent(ctx->ID());
+  if (Symbols.findInStack(ident) == -1) {     // no existe el identificador en el stack
+    Errors.undeclaredIdent(ctx->ID());        // error
     TypesMgr::TypeId te = Types.createErrorTy();
     putTypeDecor(ctx, te);
     putIsLValueDecor(ctx, true);
@@ -325,6 +388,30 @@ antlrcpp::Any TypeCheckVisitor::visitIdent(AslParser::IdentContext *ctx) {
   return 0;
 }
 
+//ident '(' ')'
+antlrcpp::Any TypeCheckVisitor::visitFunction_call(AslParser::Function_callContext *ctx) {
+  DEBUG_ENTER();
+
+  visit(ctx-> ident());   // comprobar si existe el ident
+  TypesMgr::TypeId tID = getTypeDecor(ctx->ident());  // tipo de nodo de ident
+  TypesMgr::TypeId tFunc = Types.createErrorTy();
+
+  if (not Types.isFunctionTy(tID) and not Types.isErrorTy(tID)) {
+    Errors.isNotCallable(ctx->ident());
+  } 
+  if ( Types.isFunctionTy(tID)) {
+    tFunc = Types.getFuncReturnType(tID);
+
+    
+
+  }
+  
+
+  putTypeDecor(ctx, tFunc);
+  putIsLValueDecor(ctx, false);
+  DEBUG_EXIT();
+  return 0;
+}
 
 // Getters for the necessary tree node atributes:
 //   Scope, Type ans IsLValue

@@ -78,24 +78,28 @@ statement
         | WRITE expr ';'                      # writeExpr
           // Write a string
         | WRITE STRING ';'                    # writeString
-        //| RETURN ';'                          # returnStmt
+        //| RETURN expr ';'                         # returnStmt
         ;
 
 // Grammar for left expressions (l-values in C++)
 left_expr
-        : ident
+        : ident ('[' expr ']')?
         ;
 
 // Grammar for expressions with boolean, relational and aritmetic operators
 
-expr    : op=(SUB|PLUS|NOT) expr                    # unary
+expr    : LPAR expr RPAR                            #paren
+        | ident ('[' expr ']')                      # array_acess
+        | ident '(' (expr (',' expr)* )? ')'        # function_call
+
+        | op=(SUB|PLUS|NOT) expr                    # unary
         | expr op=(MUL|DIV) expr                    # arithmetic
         | expr op=(PLUS|SUB) expr                   # arithmetic
         | expr op=(EQUAL|NEQ|GT|LT|GE|LE) expr      # relational
         | expr op=AND expr                          #logic    
         | expr op=OR expr                           #logic
-        | LPAR expr RPAR                            #paren
         | (INTVAL|FLOATVAL|BOOLVAL|CHARVAL)         # value
+        
         | ident                                     # exprIdent
         ;
 

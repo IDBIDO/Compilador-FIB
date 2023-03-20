@@ -208,8 +208,17 @@ antlrcpp::Any CodeGenVisitor::visitWriteString(AslParser::WriteStringContext *ct
 antlrcpp::Any CodeGenVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx) {
   DEBUG_ENTER();
   CodeAttribs && codAts = visit(ctx->ident());
+
+  //if (ctx->expr()) {
+  //  CodeAttribs && codAtsIndex = visit(ctx->expr());
+  //}
+
   DEBUG_EXIT();
   return codAts;
+}
+
+antlrcpp::Any visitArray_index(AslParser::Array_acessContext *ctx) {
+  
 }
 
 antlrcpp::Any CodeGenVisitor::visitArithmetic(AslParser::ArithmeticContext *ctx) {

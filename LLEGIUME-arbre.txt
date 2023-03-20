@@ -70,15 +70,26 @@ MANUAL y DEFINICION: https://www.cs.upc.edu/~cl/practica/modules.html
 
 -------------------------------------------------------
 
+Asl.g: genera AslLexer y AslParser(parse tree)
 
-main: 
+main: tiene las siguientes funcionaridades: 
+    * Usage: correct use of program 
+    * read input file
+    * 
 
-TypeCheckVisitor: guarda el tipo de datos del programa
+AslVisitor: tiene un "visit" method para cada regla de la gramatica.
+AslBaseVisitor: implementa estos metodos.
+(TypeCheckVisitor, SymbolsVisitor, CodeGenVisitor) son derivados de AslBaseVisitor
 
-SymbolsVisitor: guarda el identificador, el contexto del id
-y con que tipo de datos esta asociados
+TypeCheckVisitor: will declare visit methods for nodes related to expressions,
+ assignments, and parameter passing,
+ but ignore nodes about variable or function declarations.
 
-CodeGenVisitor: 
+SymbolsVisitor: will only declare visit methods for nodes related to variable,
+ parameter, or function declarations, and ignore all the rest.
+
+CodeGenVisitor: will declare visit methods for nodes related to instructions and expressions,
+ but ignore others.
 
 -------------------------------------------------------
 
