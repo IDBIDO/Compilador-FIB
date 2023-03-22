@@ -231,19 +231,12 @@ antlrcpp::Any TypeCheckVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx)
       Errors.nonIntegerIndexInArrayAccess(ctx->expr());
 
     }
-
     if (knowArrayType) tId = Types.getArrayElemType(tId);
-
-
+    else tId = Types.createErrorTy();
   }
 
-
-
   putTypeDecor(ctx, tId);
-  
   putIsLValueDecor(ctx, b);
-
-
 
   DEBUG_EXIT();
   return 0;
@@ -388,7 +381,7 @@ antlrcpp::Any TypeCheckVisitor::visitIdent(AslParser::IdentContext *ctx) {
   return 0;
 }
 
-//ident '(' ')'
+//ident '(' ')' //DCE: ahor apuede ser ident (expr (',' expr)*)? por ejemplo f(a+3); JP_8
 antlrcpp::Any TypeCheckVisitor::visitFunction_call(AslParser::Function_callContext *ctx) {
   DEBUG_ENTER();
 
@@ -402,6 +395,10 @@ antlrcpp::Any TypeCheckVisitor::visitFunction_call(AslParser::Function_callConte
   if ( Types.isFunctionTy(tID)) {
     tFunc = Types.getFuncReturnType(tID);
   }
+  //if (not Types.isErrorTy(tID) and Types.isFunctionTy(tFunc) and Types.isVoidFunction(tFunc))
+      //while (1) {}
+      //Errors.incompatibleReturn(ctx->tFunc()); esto no va, donde esta el nodo RETURN?
+      //Errors.isNotCallable(ctx->expr());
 
   putTypeDecor(ctx, tFunc);
   putIsLValueDecor(ctx, false);
