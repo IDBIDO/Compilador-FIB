@@ -29,24 +29,16 @@
 
 #include "SymbolsVisitor.h"
 #include "antlr4-runtime.h"
-
 #include "../common/TypesMgr.h"
 #include "../common/SymTable.h"
 #include "../common/TreeDecoration.h"
 #include "../common/SemErrors.h"
-
 #include <iostream>
 #include <string>
 #include <vector>
-
 #include <cstddef>    // std::size_t
-
-// uncomment the following line to enable debugging messages with DEBUG*
  //#define DEBUG_BUILD
 #include "../common/debug.h"
-
-// using namespace std;
-
 
 // Constructor
 SymbolsVisitor::SymbolsVisitor(TypesMgr       & Types,
@@ -59,25 +51,14 @@ SymbolsVisitor::SymbolsVisitor(TypesMgr       & Types,
   Errors{Errors} {
 }
 
-/*
-visitProgram
-visitFunction
-visitDeclarations
-
-
-*/
-
-
 // Methods to visit each kind of node:
 //
 antlrcpp::Any SymbolsVisitor::visitProgram(AslParser::ProgramContext *ctx) {
   DEBUG_ENTER();
   SymTable::ScopeId sc = Symbols.pushNewScope(SymTable::GLOBAL_SCOPE_NAME);
   putScopeDecor(ctx, sc);
-  for (auto ctxFunc : ctx->function()) { 
+  for (auto ctxFunc : ctx->function())
     visit(ctxFunc);
-  }
-  // Symbols.print();
   Symbols.popScope();
   DEBUG_EXIT();
   return 0;
@@ -88,44 +69,31 @@ antlrcpp::Any SymbolsVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   std::string funcName = ctx->ID()->getText();
   SymTable::ScopeId sc = Symbols.pushNewScope(funcName);
   putScopeDecor(ctx, sc);
-
-  
-  visit(ctx->params());     // visitar los parametros de la funcion
-  visit(ctx->declarations());
-
-  //Symbols.print();
+  visit(ctx->params());             // Propagamos los parametros
+  visit(ctx->declarations());       // Propagamos las declaraciones!
   Symbols.popScope();
-  std::string ident = ctx->ID()->getText();
-  if (Symbols.findInCurrentScope(ident)) {
+  std::string ident = ctx->ID()->getText();   //ident:  Nombre de la funcion
+  TypesMgr::TypeId tRet;                      //tRet:   Tipo de retorno
+  std::vector<TypesMgr::TypeId> lParams;      //lParams:Lista de parametros
+  if (Symbols.findInCurrentScope(ident))
     Errors.declaredIdent(ctx->ID());
-  }
   else {
-    //int id_size = ctx->ID().size();
-    //int type_size = ctx->type().size();
-
-    TypesMgr::TypeId tRet; // get RETURN type
-    if(ctx->type() != NULL) {     // ha especificado tipo de retorno
-      //tRet = getTypeDecor(ctx->type());   // devuelve el tipo
-      if (ctx->type()->simple_type()->INT()) tRet = Types.createIntegerTy();
-      else if (ctx->type()->simple_type()->BOOL()) tRet = Types.createBooleanTy();
-      else if (ctx->type()->simple_type() ->FLOAT()) tRet = Types.createFloatTy();
-      else if (ctx->type()->simple_type()->CHAR()) tRet = Types.createCharacterTy();
-      else if (ctx->type()->array_type()) {
+    for (auto i : ctx->params()->type())  // get Param types
+      lParams.push_back(getTypeDecor(i));
+    if(ctx->type() != NULL) {             // ha especificado tipo de retorno
+      if (ctx->type()->array_type()) {    // y es tipo array
         int size = stoi(ctx->type()->array_type()->INTVAL()->getText());
         TypesMgr::TypeId elemType = getTypeDecor(ctx->type());
         tRet = Types.createArrayTy(size, elemType);
-      }
-    } else tRet = Types.createVoidTy();
+      }                                   // de tipo simple
+      else if (ctx->type()->simple_type()->INT())     tRet = Types.createIntegerTy();
+      else if (ctx->type()->simple_type()->BOOL())    tRet = Types.createBooleanTy();
+      else if (ctx->type()->simple_type() ->FLOAT())  tRet = Types.createFloatTy();
+      else if (ctx->type()->simple_type()->CHAR())    tRet = Types.createCharacterTy();
+    } else tRet = Types.createVoidTy();   // o es Void!
 
-    // get Param types
-    std::vector<TypesMgr::TypeId> lParamsTy; // PARAMETER types
-    for (auto i : ctx->params()->type()) {
-      lParamsTy.push_back(getTypeDecor(i));
-    } 
-    
-    TypesMgr::TypeId tFunc = Types.createFunctionTy(lParamsTy, tRet);
-    Symbols.addFunction(ident, tFunc);
-    
+    TypesMgr::TypeId tFunc = Types.createFunctionTy(lParams, tRet);
+    Symbols.addFunction(ident, tFunc);    // Añadimos el tipo  funcion con parametros y return
   }
   DEBUG_EXIT();
   return 0;
@@ -133,20 +101,16 @@ antlrcpp::Any SymbolsVisitor::visitFunction(AslParser::FunctionContext *ctx) {
 
 antlrcpp::Any SymbolsVisitor::visitParams(AslParser::ParamsContext *ctx) {
   DEBUG_ENTER();
-
-  for (size_t i = 0; i < ctx->ID().size(); ++i) {
-    visit(ctx->type(i));   // creara un el tipo correspondiente
-    std::string ident = ctx->ID(i)->getText();    // id de la variable
-    if (Symbols.findInCurrentScope(ident)) {
+  for (size_t i = 0; i < ctx->ID().size(); ++i) { // Para cada parametro
+    visit(ctx->type(i));                          // Se crea su tipo
+    std::string ident = ctx->ID(i)->getText();    // Ident de la variable
+    if (Symbols.findInCurrentScope(ident))
       Errors.declaredIdent(ctx->ID(i));
-    }
     else {
-      TypesMgr::TypeId t1 = getTypeDecor(ctx->type(i));
-      Symbols.addLocalVar(ident, t1);
+      TypesMgr::TypeId t = getTypeDecor(ctx->type(i));
+      Symbols.addLocalVar(ident, t);              // Añadimos como variable local
     }
   }
-
-
   DEBUG_EXIT();
   return 0;
 }
@@ -161,23 +125,18 @@ antlrcpp::Any SymbolsVisitor::visitDeclarations(AslParser::DeclarationsContext *
 antlrcpp::Any SymbolsVisitor::visitVariable_decl(AslParser::Variable_declContext *ctx) {
   DEBUG_ENTER();
   for (size_t i= 0; i < ctx->ID().size(); ++i){
-
-  //while(1){}
     std::string ident = ctx->ID(i)->getText();
     if (Symbols.findInCurrentScope(ident))
         Errors.declaredIdent(ctx->ID(i));
     else {
         visit(ctx->type());
         TypesMgr::TypeId t = getTypeDecor(ctx->type());
-        //if (ctx->type()->simple_type()) t = getTypeDecor(ctx->type()->simple_type());
-        //else t = getTypeDecor(ctx->type()->array_type());
         Symbols.addLocalVar(ident, t);
     }
   }
   DEBUG_EXIT();
   return 0;
   }
-
 
 antlrcpp::Any SymbolsVisitor::visitType(AslParser::TypeContext *ctx) {
   DEBUG_ENTER();
@@ -191,45 +150,26 @@ antlrcpp::Any SymbolsVisitor::visitType(AslParser::TypeContext *ctx) {
     TypesMgr::TypeId t = getTypeDecor(ctx->array_type());
     putTypeDecor(ctx, t);
   }
-
-  //Symbols.print();
-
   DEBUG_EXIT();
   return 0;
 }
 
 antlrcpp::Any SymbolsVisitor::visitSimple_type(AslParser::Simple_typeContext *ctx) {
   DEBUG_ENTER();
-  if (ctx->INT()) {
-    TypesMgr::TypeId t = Types.createIntegerTy();
-    putTypeDecor(ctx, t);
-  }
-  else if (ctx->BOOL()) {
-    TypesMgr::TypeId t = Types.createBooleanTy();
-    putTypeDecor(ctx, t);
-  }
-  else if (ctx ->FLOAT()) {
-    TypesMgr::TypeId t = Types.createFloatTy();
-    putTypeDecor(ctx, t);
-  }
-  else if (ctx->CHAR()) {
-    TypesMgr::TypeId t = Types.createCharacterTy();
-    putTypeDecor(ctx, t);
-  }
+  TypesMgr::TypeId t;
+  if (ctx->INT())         t = Types.createIntegerTy();
+  else if (ctx->BOOL())   t = Types.createBooleanTy();
+  else if (ctx ->FLOAT()) t = Types.createFloatTy();
+  else if (ctx->CHAR())   t = Types.createCharacterTy();
+  putTypeDecor(ctx, t);
   DEBUG_EXIT();
   return 0;
 }
 
 antlrcpp::Any SymbolsVisitor::visitArray_type(AslParser::Array_typeContext *ctx) {
   DEBUG_ENTER();
-
-//TypeId createArrayTy     (unsigned int                size,
-//TypeId                      elemType);
-  //Symbols.print();
-  //while(1){}
   visit(ctx->INTVAL());
   visit(ctx->simple_type());
-  //TypesMgr::TypeId t =
   int size = stoi(ctx->INTVAL()->getText());
   TypesMgr::TypeId elemType = getTypeDecor(ctx->simple_type());
   TypesMgr::TypeId t = Types.createArrayTy(size, elemType);

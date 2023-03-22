@@ -119,30 +119,30 @@ ident   : ID
 /// Lexer Rules
 //////////////////////////////////////////////////
 
-ARRAY : 'array';
-OF : 'of' ;
-ASSIGN    : '=' ;
-EQUAL     : '==' ;
-NEQ    : '!=';
+ARRAY   : 'array';
+OF      : 'of' ;
+ASSIGN  : '=' ;
+EQUAL   : '==' ;
+NEQ     : '!=';
 GT      : '>';
 LT      : '<';
 GE      : '>=';
 LE      : '<=';
 
-PLUS      : '+' ;
-MUL       : '*';
+PLUS    : '+' ;
+MUL     : '*';
 SUB     : '-';
 DIV     : '/';
 
-AND     : 'and';                        // conflicto con ID, ponerlo delante
+AND     : 'and';     // conflicto con ID, ponerlo delante
 OR      : 'or';
 NOT     : 'not';
 
 LPAR    : '(';
 RPAR    : ')';
 
-VAR       : 'var';
-INT       : 'int';
+VAR     : 'var';
+INT     : 'int';
 BOOL    : 'bool';
 FLOAT   : 'float';
 CHAR    : 'char';
