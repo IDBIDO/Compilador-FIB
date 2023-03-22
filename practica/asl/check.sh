@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set the initial value of xx
-xx=8
+xx=10
 
 # Initialize counters for passing and failing tests
 pass=0

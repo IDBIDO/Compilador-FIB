@@ -39,7 +39,7 @@ program : function+ EOF
 // A function has a name, a list of parameters and a list of statements
 function
         : FUNC ID params declarations statements (RETURN ';')? ENDFUNC
-        | FUNC ID params ':' type declarations statements RETURN expr ';' ENDFUNC 
+        | FUNC ID params ':' type declarations statements RETURN expr ';' ENDFUNC
         ;
 
 params: '(' (ID ':' type)? (',' ID ':' type)* ')';
@@ -71,7 +71,7 @@ statement
           // if-then-else statement (else is optional)
         | IF expr THEN statements (ELSE statements)? ENDIF       # ifStmt
           // A function/procedure call has a list of arguments in parenthesis (possibly empty)
-        | ident '(' ')' ';'                   # procCall
+        | ident '(' (expr (',' expr)* )?')' ';'                   # procCall
           // Read a variable
         | READ left_expr ';'                  # readStmt
           // Write an expression
