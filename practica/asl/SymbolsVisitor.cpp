@@ -105,7 +105,11 @@ antlrcpp::Any SymbolsVisitor::visitFunction(AslParser::FunctionContext *ctx) {
 
     TypesMgr::TypeId tRet; // get RETURN type
     if(ctx->type() != NULL) {     // ha especificado tipo de retorno
-      tRet = getTypeDecor(ctx->type());   // devuelve el tipo
+      //tRet = getTypeDecor(ctx->type());   // devuelve el tipo
+      if (ctx->type()->INT()) tRet = Types.createIntegerTy();
+      else if (ctx->type()->BOOL()) tRet = Types.createBooleanTy();
+      else if (ctx->type() ->FLOAT()) tRet = Types.createFloatTy();
+      else if (ctx->type()->CHAR()) tRet = Types.createCharacterTy();
     } else tRet = Types.createVoidTy();
 
     // get Param types

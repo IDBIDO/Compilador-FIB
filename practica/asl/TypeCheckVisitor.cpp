@@ -222,7 +222,7 @@ antlrcpp::Any TypeCheckVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx)
     // comprobar tId: no es un tipo error, pero tampoco es del tipo array
     if (not Types.isErrorTy(tId) and not Types.isArrayTy(tId)) {    
       Errors.nonArrayInArrayAccess(ctx);
-      b = false;    // no sabemos que es, no poner que es left value decor
+      //b = false;    // no sabemos que es, no poner que es left value decor
       knowArrayType = false;
     }
 
@@ -401,11 +401,7 @@ antlrcpp::Any TypeCheckVisitor::visitFunction_call(AslParser::Function_callConte
   } 
   if ( Types.isFunctionTy(tID)) {
     tFunc = Types.getFuncReturnType(tID);
-
-    
-
   }
-  
 
   putTypeDecor(ctx, tFunc);
   putIsLValueDecor(ctx, false);
