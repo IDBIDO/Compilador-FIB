@@ -1,5 +1,5 @@
 
-// Generated from Asl.g4 by ANTLR 4.7.2
+// Generated from Asl.g4 by ANTLR 4.9.2
 
 #pragma once
 
@@ -12,16 +12,17 @@
 class  AslLexer : public antlr4::Lexer {
 public:
   enum {
-    T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, ASSIGN = 6, EQUAL = 7, 
-    NEQ = 8, GT = 9, LT = 10, GE = 11, LE = 12, PLUS = 13, MUL = 14, SUB = 15, 
-    DIV = 16, AND = 17, OR = 18, NOT = 19, LPAR = 20, RPAR = 21, VAR = 22, 
-    INT = 23, BOOL = 24, FLOAT = 25, CHAR = 26, IF = 27, THEN = 28, ELSE = 29, 
-    ENDIF = 30, WHILE = 31, DO = 32, ENDWHILE = 33, RETURN = 34, FUNC = 35, 
-    ENDFUNC = 36, READ = 37, WRITE = 38, BOOLVAL = 39, ID = 40, INTVAL = 41, 
-    FLOATVAL = 42, CHARVAL = 43, STRING = 44, COMMENT = 45, WS = 46
+    T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, ARRAY = 6, OF = 7, 
+    ASSIGN = 8, EQUAL = 9, NEQ = 10, GT = 11, LT = 12, GE = 13, LE = 14, 
+    PLUS = 15, MUL = 16, SUB = 17, DIV = 18, AND = 19, OR = 20, NOT = 21, 
+    LPAR = 22, RPAR = 23, VAR = 24, INT = 25, BOOL = 26, FLOAT = 27, CHAR = 28, 
+    IF = 29, THEN = 30, ELSE = 31, ENDIF = 32, WHILE = 33, DO = 34, ENDWHILE = 35, 
+    RETURN = 36, FUNC = 37, ENDFUNC = 38, READ = 39, WRITE = 40, BOOLVAL = 41, 
+    ID = 42, INTVAL = 43, FLOATVAL = 44, CHARVAL = 45, STRING = 46, COMMENT = 47, 
+    WS = 48
   };
 
-  AslLexer(antlr4::CharStream *input);
+  explicit AslLexer(antlr4::CharStream *input);
   ~AslLexer();
 
   virtual std::string getGrammarFileName() const override;

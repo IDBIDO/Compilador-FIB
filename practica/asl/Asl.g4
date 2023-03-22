@@ -52,10 +52,18 @@ variable_decl
         : VAR ID (',' ID)* ':' type
         ;
 
-type    : INT
+array_type
+        : ARRAY '[' INTVAL ']' OF simple_type
+        ;
+
+simple_type    : INT
         | BOOL 
         | FLOAT
         | CHAR
+        ;
+
+type    : simple_type
+        | array_type
         ;
 
 statements
@@ -111,7 +119,8 @@ ident   : ID
 /// Lexer Rules
 //////////////////////////////////////////////////
 
-
+ARRAY : 'array';
+OF : 'of' ;
 ASSIGN    : '=' ;
 EQUAL     : '==' ;
 NEQ    : '!=';

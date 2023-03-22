@@ -392,13 +392,18 @@ antlrcpp::Any TypeCheckVisitor::visitFunction_call(AslParser::Function_callConte
   if (not Types.isFunctionTy(tID) and not Types.isErrorTy(tID)) {
     Errors.isNotCallable(ctx->ident());
   } 
-  if ( Types.isFunctionTy(tID)) {
-    tFunc = Types.getFuncReturnType(tID);
-  }
-  //if (not Types.isErrorTy(tID) and Types.isFunctionTy(tFunc) and Types.isVoidFunction(tFunc))
+  if (Types.isFunctionTy(tID)) {
+    if (Types.isVoidFunction(tID))
+        Errors.isNotFunction(ctx->ident());
+    else
+        tFunc = Types.getFuncReturnType(tID);
+  }/*
+  if (not Types.isErrorTy(tID) and Types.isVoidTy(Types.getFuncReturnType(tFunc))){
+
       //while (1) {}
+      Errors.isNotFunction(ctx->ident());
+  }*/
       //Errors.incompatibleReturn(ctx->tFunc()); esto no va, donde esta el nodo RETURN?
-      //Errors.isNotCallable(ctx->expr());
 
   putTypeDecor(ctx, tFunc);
   putIsLValueDecor(ctx, false);

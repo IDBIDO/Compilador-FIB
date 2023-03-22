@@ -1,5 +1,5 @@
 
-// Generated from Asl.g4 by ANTLR 4.7.2
+// Generated from Asl.g4 by ANTLR 4.9.2
 
 #pragma once
 
@@ -28,6 +28,10 @@ public:
     virtual antlrcpp::Any visitDeclarations(AslParser::DeclarationsContext *context) = 0;
 
     virtual antlrcpp::Any visitVariable_decl(AslParser::Variable_declContext *context) = 0;
+
+    virtual antlrcpp::Any visitArray_type(AslParser::Array_typeContext *context) = 0;
+
+    virtual antlrcpp::Any visitSimple_type(AslParser::Simple_typeContext *context) = 0;
 
     virtual antlrcpp::Any visitType(AslParser::TypeContext *context) = 0;
 

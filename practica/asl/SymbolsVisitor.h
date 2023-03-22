@@ -66,6 +66,8 @@ public:
   antlrcpp::Any visitDeclarations(AslParser::DeclarationsContext *ctx);
   antlrcpp::Any visitVariable_decl(AslParser::Variable_declContext *ctx);
   antlrcpp::Any visitType(AslParser::TypeContext *ctx);
+  antlrcpp::Any visitArray_type(AslParser::Array_typeContext *ctx);
+  antlrcpp::Any visitSimple_type(AslParser::Simple_typeContext *ctx);
 
   // antlrcpp::Any visitStatements(AslParser::StatementsContext *ctx);
   // antlrcpp::Any visitAssignStmt(AslParser::AssignStmtContext *ctx);
