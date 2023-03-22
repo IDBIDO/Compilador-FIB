@@ -78,22 +78,22 @@ antlrcpp::Any SymbolsVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   if (Symbols.findInCurrentScope(ident))
     Errors.declaredIdent(ctx->ID());
   else {
-    for (auto i : ctx->params()->type())  // get Param types
-      lParams.push_back(getTypeDecor(i));
-    if(ctx->type() != NULL) {             // ha especificado tipo de retorno
-      if (ctx->type()->array_type()) {    // y es tipo array
+    if(ctx->type() != NULL) {               // ha especificado tipo de retorno
+      if (ctx->type()->array_type()) {      // y es tipo array
         int size = stoi(ctx->type()->array_type()->INTVAL()->getText());
         TypesMgr::TypeId elemType = getTypeDecor(ctx->type());
         tRet = Types.createArrayTy(size, elemType);
-      }                                   // de tipo simple
-      else if (ctx->type()->simple_type()->INT())     tRet = Types.createIntegerTy();
-      else if (ctx->type()->simple_type()->BOOL())    tRet = Types.createBooleanTy();
-      else if (ctx->type()->simple_type() ->FLOAT())  tRet = Types.createFloatTy();
-      else if (ctx->type()->simple_type()->CHAR())    tRet = Types.createCharacterTy();
-    } else tRet = Types.createVoidTy();   // o es Void!
-
+      }                                   
+      else if (ctx->type()->simple_type()){ // de tipo simple
+        visit(ctx->type()->simple_type());  // propagamos el tipo simple
+        tRet = getTypeDecor(ctx->type()->simple_type());
+      }
+    } 
+    else tRet = Types.createVoidTy();       // o es Void!
+    for (auto i : ctx->params()->type())    // get Param types
+      lParams.push_back(getTypeDecor(i));
     TypesMgr::TypeId tFunc = Types.createFunctionTy(lParams, tRet);
-    Symbols.addFunction(ident, tFunc);    // Añadimos el tipo  funcion con parametros y return
+    Symbols.addFunction(ident, tFunc);      // Añadimos el tipo Funcion con parametros y return
   }
   DEBUG_EXIT();
   return 0;
