@@ -71,7 +71,7 @@ antlrcpp::Any TypeCheckVisitor::visitProgram(AslParser::ProgramContext *ctx) {
   DEBUG_ENTER();
   SymTable::ScopeId sc = getScopeDecor(ctx);
   Symbols.pushThisScope(sc);
-  for (auto ctxFunc : ctx->function()) { 
+  for (auto ctxFunc : ctx->function()) {
     visit(ctxFunc);
   }
   if (Symbols.noMainProperlyDeclared())
@@ -88,7 +88,7 @@ antlrcpp::Any TypeCheckVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   Symbols.pushThisScope(sc);
   //Symbols.print();
   visit(ctx->statements());
-  visit(ctx->return_statements());
+  //visit(ctx->return_statements());
   Symbols.popScope();
   DEBUG_EXIT();
   return 0;
@@ -115,9 +115,20 @@ antlrcpp::Any TypeCheckVisitor::visitFunction(AslParser::FunctionContext *ctx) {
 //   return r;
 // }
 
+//  (RETURN expr? ';')*
 antlrcpp::Any TypeCheckVisitor::visitReturn_statements(AslParser::Return_statementsContext *ctx) {
   DEBUG_ENTER();
   visitChildren(ctx);
+
+  //while(1){}
+
+  //for (auto ctxFunc : ctx->function()){
+    //if (ctx->RETURN() != 0)TypesMgr::TypeId t1 = getTypeDecor(ctx->RETURN());
+    //TypesMgr::TypeId t2 = getTypeDecor(ctx->expr());
+    //visit(ctxFunc);
+    Symbols.print();
+    //Types.getFuncReturnType(t2);
+  //}
   DEBUG_EXIT();
   return 0;
 }
@@ -305,6 +316,8 @@ antlrcpp::Any TypeCheckVisitor::visitValue(AslParser::ValueContext *ctx) {
   else if (ctx->CHARVAL()) t = Types.createCharacterTy();
   else if (ctx->FLOATVAL()) t = Types.createFloatTy();
   else if (ctx->BOOLVAL()) t = Types.createBooleanTy();
+  //Symbols.print();
+  //while (1){}
   putTypeDecor(ctx, t);
   putIsLValueDecor(ctx, false);
   DEBUG_EXIT();
