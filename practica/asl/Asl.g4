@@ -42,7 +42,9 @@ function
         | FUNC ID params ':' type declarations statements RETURN expr ';' ENDFUNC
         ;
 
-params: '(' (ID ':' type)? (',' ID ':' type)* ')';
+params  
+        : '(' (ID ':' type)? (',' ID ':' type)* ')'
+        ;
 
 declarations
         : (variable_decl)*
@@ -56,13 +58,15 @@ array_type
         : ARRAY '[' INTVAL ']' OF simple_type
         ;
 
-simple_type    : INT
+simple_type
+        : INT
         | BOOL 
         | FLOAT
         | CHAR
         ;
 
-type    : simple_type
+type    
+        : simple_type
         | array_type
         ;
 

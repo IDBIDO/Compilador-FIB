@@ -86,7 +86,7 @@ antlrcpp::Any TypeCheckVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   DEBUG_ENTER();
   SymTable::ScopeId sc = getScopeDecor(ctx);
   Symbols.pushThisScope(sc);
-  // Symbols.print();
+  //Symbols.print();
   visit(ctx->statements());
   Symbols.popScope();
   DEBUG_EXIT();
