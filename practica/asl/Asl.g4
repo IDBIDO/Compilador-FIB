@@ -38,9 +38,11 @@ program : function+ EOF
 
 // A function has a name, a list of parameters and a list of statements
 function
-        : FUNC ID params declarations statements (RETURN ';')? ENDFUNC
-        | FUNC ID params ':' type declarations statements RETURN expr ';' ENDFUNC
+        : FUNC ID params (':' type)? declarations statements return_statements ENDFUNC
         ;
+//        : FUNC ID params declarations statements (RETURN ';')? ENDFUNC
+//        | FUNC ID params ':' type declarations statements RETURN expr ';' ENDFUNC
+//        ;
 
 params  
         : '(' (ID ':' type)? (',' ID ':' type)* ')'
@@ -68,6 +70,10 @@ simple_type
 type    
         : simple_type
         | array_type
+        ;
+
+return_statements
+        : (RETURN expr? ';')*
         ;
 
 statements

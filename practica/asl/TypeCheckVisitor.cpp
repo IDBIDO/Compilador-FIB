@@ -88,6 +88,7 @@ antlrcpp::Any TypeCheckVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   Symbols.pushThisScope(sc);
   //Symbols.print();
   visit(ctx->statements());
+  visit(ctx->return_statements());
   Symbols.popScope();
   DEBUG_EXIT();
   return 0;
@@ -113,6 +114,13 @@ antlrcpp::Any TypeCheckVisitor::visitFunction(AslParser::FunctionContext *ctx) {
 //   DEBUG_EXIT();
 //   return r;
 // }
+
+antlrcpp::Any TypeCheckVisitor::visitReturn_statements(AslParser::Return_statementsContext *ctx) {
+  DEBUG_ENTER();
+  visitChildren(ctx);
+  DEBUG_EXIT();
+  return 0;
+}
 
 antlrcpp::Any TypeCheckVisitor::visitStatements(AslParser::StatementsContext *ctx) {
   DEBUG_ENTER();

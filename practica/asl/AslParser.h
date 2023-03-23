@@ -25,8 +25,8 @@ public:
   enum {
     RuleProgram = 0, RuleFunction = 1, RuleParams = 2, RuleDeclarations = 3, 
     RuleVariable_decl = 4, RuleArray_type = 5, RuleSimple_type = 6, RuleType = 7, 
-    RuleStatements = 8, RuleStatement = 9, RuleLeft_expr = 10, RuleExpr = 11, 
-    RuleIdent = 12
+    RuleReturn_statements = 8, RuleStatements = 9, RuleStatement = 10, RuleLeft_expr = 11, 
+    RuleExpr = 12, RuleIdent = 13
   };
 
   AslParser(antlr4::TokenStream *input);
@@ -47,6 +47,7 @@ public:
   class Array_typeContext;
   class Simple_typeContext;
   class TypeContext;
+  class Return_statementsContext;
   class StatementsContext;
   class StatementContext;
   class Left_exprContext;
@@ -76,10 +77,9 @@ public:
     ParamsContext *params();
     DeclarationsContext *declarations();
     StatementsContext *statements();
+    Return_statementsContext *return_statements();
     antlr4::tree::TerminalNode *ENDFUNC();
-    antlr4::tree::TerminalNode *RETURN();
     TypeContext *type();
-    ExprContext *expr();
 
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
    
@@ -174,6 +174,21 @@ public:
   };
 
   TypeContext* type();
+
+  class  Return_statementsContext : public antlr4::ParserRuleContext {
+  public:
+    Return_statementsContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    std::vector<antlr4::tree::TerminalNode *> RETURN();
+    antlr4::tree::TerminalNode* RETURN(size_t i);
+    std::vector<ExprContext *> expr();
+    ExprContext* expr(size_t i);
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Return_statementsContext* return_statements();
 
   class  StatementsContext : public antlr4::ParserRuleContext {
   public:
