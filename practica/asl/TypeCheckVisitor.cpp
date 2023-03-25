@@ -247,13 +247,13 @@ antlrcpp::Any TypeCheckVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx)
   if (ctx->expr()) {    // se trata de un array
     visit(ctx->expr());     // mirar si la expresion es correcta
     TypesMgr::TypeId tIndex = getTypeDecor(ctx->expr());
-    if (not Types.isErrorTy(tIndex) and not Types.isIntegerTy(tIndex))  //tIndex no es error
+    if (not Types.isErrorTy(tIndex) and not Types.isIntegerTy(tIndex))      //tIndex no es error
       Errors.nonIntegerIndexInArrayAccess(ctx->expr());                     //tIndex no es un int!
     if (not Types.isErrorTy(tId) and not Types.isArrayTy(tId)) {            //tID no es Err
       Errors.nonArrayInArrayAccess(ctx);                                    //tID no es Array!
       knowArrayType = false;
     }
-    if (knowArrayType) tId = Types.getArrayElemType(tId);
+    if (not Types.isErrorTy(tId) and knowArrayType) tId = Types.getArrayElemType(tId);
     else tId = Types.createErrorTy();
   }
   putTypeDecor(ctx, tId);
@@ -357,7 +357,8 @@ antlrcpp::Any TypeCheckVisitor::visitArray_acess(AslParser::Array_acessContext *
   TypesMgr::TypeId tElem = Types.createErrorTy();         // tElem: Tipo de los elem del array
   if (not Types.isErrorTy(tID) and not Types.isArrayTy(tID))              //tID no es Err
     Errors.nonArrayInArrayAccess(ctx);                                    //tID no es Array!
-  else tElem = Types.getArrayElemType(tID); // Guardamos tipo del elemento del array
+  else if (not Types.isErrorTy(tID)) 
+    tElem = Types.getArrayElemType(tID); // Guardamos tipo del elemento del array
   if (not Types.isErrorTy(tIndex) and not Types.isIntegerTy(tIndex))      //tIndex no es error
     Errors.nonIntegerIndexInArrayAccess(ctx->expr());                     //tIndex no es un int!
   putTypeDecor(ctx, tElem);
