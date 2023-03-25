@@ -38,11 +38,12 @@ program : function+ EOF
 
 // A function has a name, a list of parameters and a list of statements
 function
-        : FUNC ID params declarations statements (RETURN ';')? ENDFUNC
-        | FUNC ID params ':' type declarations statements RETURN expr ';' ENDFUNC
+        : FUNC ID params (':' type)? declarations statements ENDFUNC
         ;
 
-params: '(' (ID ':' type)? (',' ID ':' type)* ')';
+params  
+        : '(' (ID ':' type)? (',' ID ':' type)* ')'
+        ;
 
 declarations
         : (variable_decl)*
@@ -56,13 +57,15 @@ array_type
         : ARRAY '[' INTVAL ']' OF simple_type
         ;
 
-simple_type    : INT
+simple_type
+        : INT
         | BOOL 
         | FLOAT
         | CHAR
         ;
 
-type    : simple_type
+type    
+        : simple_type
         | array_type
         ;
 
@@ -86,7 +89,8 @@ statement
         | WRITE expr ';'                      # writeExpr
           // Write a string
         | WRITE STRING ';'                    # writeString
-        //| RETURN expr ';'                         # returnStmt
+          // return statement
+        | RETURN expr? ';'                    # returnStmt
         ;
 
 // Grammar for left expressions (l-values in C++)
@@ -99,7 +103,6 @@ left_expr
 expr    : LPAR expr RPAR                            #paren
         | ident ('[' expr ']')                      # array_acess
         | ident '(' (expr (',' expr)* )? ')'        # function_call
-
         | op=(SUB|PLUS|NOT) expr                    # unary
         | expr op=(MUL|DIV) expr                    # arithmetic
         | expr op=(PLUS|SUB) expr                   # arithmetic
@@ -107,7 +110,6 @@ expr    : LPAR expr RPAR                            #paren
         | expr op=AND expr                          #logic    
         | expr op=OR expr                           #logic
         | (INTVAL|FLOATVAL|BOOLVAL|CHARVAL)         # value
-        
         | ident                                     # exprIdent
         ;
 

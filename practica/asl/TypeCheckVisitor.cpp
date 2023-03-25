@@ -71,7 +71,7 @@ antlrcpp::Any TypeCheckVisitor::visitProgram(AslParser::ProgramContext *ctx) {
   DEBUG_ENTER();
   SymTable::ScopeId sc = getScopeDecor(ctx);
   Symbols.pushThisScope(sc);
-  for (auto ctxFunc : ctx->function()) { 
+  for (auto ctxFunc : ctx->function()) {
     visit(ctxFunc);
   }
   if (Symbols.noMainProperlyDeclared())
@@ -84,9 +84,19 @@ antlrcpp::Any TypeCheckVisitor::visitProgram(AslParser::ProgramContext *ctx) {
 
 antlrcpp::Any TypeCheckVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   DEBUG_ENTER();
-  SymTable::ScopeId sc = getScopeDecor(ctx);
+  SymTable::ScopeId sc = getScopeDecor(ctx);  
   Symbols.pushThisScope(sc);
-  // Symbols.print();
+  //Symbols.print();
+  TypesMgr::TypeId t = Types.createVoidTy();
+  if(ctx->type()){
+    visit(ctx->type());
+    if (ctx->type()->simple_type())     t = getTypeDecor(ctx->type()->simple_type());
+    else t = getTypeDecor(ctx->type()->array_type());
+    //std::cout << "Inheriting function type " << Types.to_string_basic(t) << "\n";
+    // aqui siempre nos devuelve typo error?
+  }
+  //std::cout << "setCurrentFunctionTy: " << Types.to_string_basic(t) << "\n";
+  setCurrentFunctionTy(t);
   visit(ctx->statements());
   Symbols.popScope();
   DEBUG_EXIT();
@@ -113,6 +123,30 @@ antlrcpp::Any TypeCheckVisitor::visitFunction(AslParser::FunctionContext *ctx) {
 //   DEBUG_EXIT();
 //   return r;
 // }
+
+//RETURN ret_expr? ';'                    # returnStmt
+antlrcpp::Any TypeCheckVisitor::visitReturnStmt(AslParser::ReturnStmtContext *ctx) {
+  DEBUG_ENTER();
+  //Symbols.print();
+  TypesMgr::TypeId t = getCurrentFunctionTy();
+  if (Types.isVoidTy(t)) {
+      if (ctx->expr()) Errors.incompatibleReturn(ctx->RETURN());
+  } else {
+      if (!ctx->expr())
+          Errors.incompatibleReturn(ctx->RETURN());
+      else{
+        visit(ctx->expr());
+        TypesMgr::TypeId t1 = getTypeDecor(ctx->expr());
+        //std::cout << "Return type: " << Types.to_string_basic(t) << "\n";
+        //std::cout << "Expr type: " << Types.to_string_basic(t1) << "\n";
+        if (not ((Types.isNumericTy(t1)) and (Types.isFloatTy(t))) and not Types.equalTypes(t1,t))
+            Errors.incompatibleReturn(ctx->RETURN());
+      }
+  }
+
+  DEBUG_EXIT();
+  return 0;
+}
 
 antlrcpp::Any TypeCheckVisitor::visitStatements(AslParser::StatementsContext *ctx) {
   DEBUG_ENTER();
