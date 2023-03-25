@@ -84,11 +84,20 @@ antlrcpp::Any TypeCheckVisitor::visitProgram(AslParser::ProgramContext *ctx) {
 
 antlrcpp::Any TypeCheckVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   DEBUG_ENTER();
-  SymTable::ScopeId sc = getScopeDecor(ctx);
+  SymTable::ScopeId sc = getScopeDecor(ctx);  
   Symbols.pushThisScope(sc);
   //Symbols.print();
+  TypesMgr::TypeId t = Types.createVoidTy();
+  if(ctx->type()){
+    visit(ctx->type());
+    if (ctx->type()->simple_type())     t = getTypeDecor(ctx->type()->simple_type());
+    else t = getTypeDecor(ctx->type()->array_type());
+    //std::cout << "Inheriting function type " << Types.to_string_basic(t) << "\n";
+    // aqui siempre nos devuelve typo error?
+  }
+  //std::cout << "setCurrentFunctionTy: " << Types.to_string_basic(t) << "\n";
+  setCurrentFunctionTy(t);
   visit(ctx->statements());
-  //visit(ctx->return_statements());
   Symbols.popScope();
   DEBUG_EXIT();
   return 0;
@@ -115,20 +124,26 @@ antlrcpp::Any TypeCheckVisitor::visitFunction(AslParser::FunctionContext *ctx) {
 //   return r;
 // }
 
-//  (RETURN expr? ';')*
-antlrcpp::Any TypeCheckVisitor::visitReturn_statements(AslParser::Return_statementsContext *ctx) {
+//RETURN ret_expr? ';'                    # returnStmt
+antlrcpp::Any TypeCheckVisitor::visitReturnStmt(AslParser::ReturnStmtContext *ctx) {
   DEBUG_ENTER();
-  visitChildren(ctx);
+  //Symbols.print();
+  TypesMgr::TypeId t = getCurrentFunctionTy();
+  if (Types.isVoidTy(t)) {
+      if (ctx->expr()) Errors.incompatibleReturn(ctx->RETURN());
+  } else {
+      if (!ctx->expr())
+          Errors.incompatibleReturn(ctx->RETURN());
+      else{
+        visit(ctx->expr());
+        TypesMgr::TypeId t1 = getTypeDecor(ctx->expr());
+        //std::cout << "Return type: " << Types.to_string_basic(t) << "\n";
+        //std::cout << "Expr type: " << Types.to_string_basic(t1) << "\n";
+        if (not ((Types.isNumericTy(t1)) and (Types.isFloatTy(t))) and not Types.equalTypes(t1,t))
+            Errors.incompatibleReturn(ctx->RETURN());
+      }
+  }
 
-  //while(1){}
-
-  //for (auto ctxFunc : ctx->function()){
-    //if (ctx->RETURN() != 0)TypesMgr::TypeId t1 = getTypeDecor(ctx->RETURN());
-    //TypesMgr::TypeId t2 = getTypeDecor(ctx->expr());
-    //visit(ctxFunc);
-    Symbols.print();
-    //Types.getFuncReturnType(t2);
-  //}
   DEBUG_EXIT();
   return 0;
 }
@@ -316,8 +331,6 @@ antlrcpp::Any TypeCheckVisitor::visitValue(AslParser::ValueContext *ctx) {
   else if (ctx->CHARVAL()) t = Types.createCharacterTy();
   else if (ctx->FLOATVAL()) t = Types.createFloatTy();
   else if (ctx->BOOLVAL()) t = Types.createBooleanTy();
-  //Symbols.print();
-  //while (1){}
   putTypeDecor(ctx, t);
   putIsLValueDecor(ctx, false);
   DEBUG_EXIT();

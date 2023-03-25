@@ -144,11 +144,13 @@ antlrcpp::Any SymbolsVisitor::visitType(AslParser::TypeContext *ctx) {
     visit(ctx->simple_type());
     TypesMgr::TypeId t = getTypeDecor(ctx->simple_type());
     putTypeDecor(ctx, t);
+  //std::cout << "visitType: " << Types.to_string_basic(t) << "\n";
   }
   else if (ctx->array_type()) {
     visit(ctx->array_type());
     TypesMgr::TypeId t = getTypeDecor(ctx->array_type());
     putTypeDecor(ctx, t);
+  //std::cout << "visitType: " << Types.to_string_basic(t) << "\n";
   }
   DEBUG_EXIT();
   return 0;
