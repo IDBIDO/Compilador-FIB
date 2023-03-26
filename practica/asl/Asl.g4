@@ -100,15 +100,15 @@ left_expr
 
 // Grammar for expressions with boolean, relational and aritmetic operators
 
-expr    : LPAR expr RPAR                            #paren
+expr    : LPAR expr RPAR                            # paren
         | ident ('[' expr ']')                      # array_acess
         | ident '(' (expr (',' expr)* )? ')'        # function_call
         | op=(SUB|PLUS|NOT) expr                    # unary
         | expr op=(MUL|DIV) expr                    # arithmetic
         | expr op=(PLUS|SUB) expr                   # arithmetic
         | expr op=(EQUAL|NEQ|GT|LT|GE|LE) expr      # relational
-        | expr op=AND expr                          #logic    
-        | expr op=OR expr                           #logic
+        | expr op=AND expr                          # logic    
+        | expr op=OR expr                           # logic
         | (INTVAL|FLOATVAL|BOOLVAL|CHARVAL)         # value
         | ident                                     # exprIdent
         ;
