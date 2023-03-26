@@ -203,20 +203,18 @@ antlrcpp::Any TypeCheckVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
   } // me esta dando mucho toc pero voy a añadir nuevos estilos!....
   else
   {
-    for(uint i = 0; i < ctx->expr().size(); ++i){
+    for(uint i= 0; i< ctx->expr().size(); ++i)
       visit(ctx->expr(i));
-    }
     if(Types.getNumOfParameters(t1) != ctx->expr().size())
       Errors.numberOfParameters(ctx->ident());
-    else{
-      for(uint i = 0; i < ctx->expr().size(); ++i){
+    else
+      for(uint i= 0; i< ctx->expr().size(); ++i){
         visit(ctx->expr(i));
         TypesMgr::TypeId tParam = Types.getParameterType(t1, i);
         TypesMgr::TypeId tExpr = getTypeDecor(ctx->expr(i));
         if(not Types.equalTypes(tParam,tExpr) and not (Types.isFloatTy(tParam) and Types.isIntegerTy(tExpr)))
           Errors.incompatibleParameter(ctx->expr(i),i+1,ctx);
       }
-    }
   }
   DEBUG_EXIT();
   return 0;
@@ -226,11 +224,12 @@ antlrcpp::Any TypeCheckVisitor::visitReadStmt(AslParser::ReadStmtContext *ctx) {
   DEBUG_ENTER();
   visit(ctx->left_expr());
   TypesMgr::TypeId t1 = getTypeDecor(ctx->left_expr());
-  if (not Types.isErrorTy(t1) and not Types.isPrimitiveTy(t1) and
-      not Types.isFunctionTy(t1))
-    Errors.readWriteRequireBasic(ctx);
-  if (not Types.isErrorTy(t1) and not getIsLValueDecor(ctx->left_expr()))
-    Errors.nonReferenceableExpression(ctx);
+  if (not Types.isErrorTy(t1)){
+    if (not Types.isPrimitiveTy(t1) and not Types.isFunctionTy(t1))
+      Errors.readWriteRequireBasic(ctx);
+    if (not getIsLValueDecor(ctx->left_expr()))
+      Errors.nonReferenceableExpression(ctx);
+  }
   DEBUG_EXIT();
   return 0;
 }
@@ -286,7 +285,6 @@ antlrcpp::Any TypeCheckVisitor::visitParen(AslParser::ParenContext *ctx) {
   return 0;
 }
 
-
 antlrcpp::Any TypeCheckVisitor::visitArithmetic(AslParser::ArithmeticContext *ctx) {
   DEBUG_ENTER();
   visit(ctx->expr(0));
@@ -299,8 +297,7 @@ antlrcpp::Any TypeCheckVisitor::visitArithmetic(AslParser::ArithmeticContext *ct
   TypesMgr::TypeId t;
   if (Types.isFloatTy(t1) or Types.isFloatTy(t2))
       t = Types.createFloatTy();
-  else
-      t = Types.createIntegerTy();
+  else t = Types.createIntegerTy();
   putTypeDecor(ctx, t);
   putIsLValueDecor(ctx, false);
   DEBUG_EXIT();
@@ -321,8 +318,6 @@ antlrcpp::Any TypeCheckVisitor::visitLogic(AslParser::LogicContext *ctx) {
   DEBUG_EXIT();
   return 0;
 }
-
-
 
 antlrcpp::Any TypeCheckVisitor::visitRelational(AslParser::RelationalContext *ctx) {
   DEBUG_ENTER();
