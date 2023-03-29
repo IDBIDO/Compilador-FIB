@@ -103,8 +103,8 @@ left_expr
 expr    : LPAR expr RPAR                            # paren
         | ident ('[' expr ']')                      # array_acess
         | ident '(' (expr (',' expr)* )? ')'        # function_call
-        | op=(SUB|PLUS|NOT) expr                    # unary
-        | expr op=(MUL|DIV) expr                    # arithmetic
+        | op=(NOT|SUB|PLUS) expr                    # unary
+        | expr op=(MUL|DIV|MOD) expr                    # arithmetic
         | expr op=(PLUS|SUB) expr                   # arithmetic
         | expr op=(EQUAL|NEQ|GT|LT|GE|LE) expr      # relational
         | expr op=AND expr                          # logic    
@@ -112,6 +112,7 @@ expr    : LPAR expr RPAR                            # paren
         | (INTVAL|FLOATVAL|BOOLVAL|CHARVAL)         # value
         | ident                                     # exprIdent
         ;
+
 
 // Identifiers
 ident   : ID
@@ -135,6 +136,7 @@ PLUS    : '+' ;
 MUL     : '*';
 SUB     : '-';
 DIV     : '/';
+MOD     : '%';
 
 AND     : 'and';     // conflicto con ID, ponerlo delante
 OR      : 'or';

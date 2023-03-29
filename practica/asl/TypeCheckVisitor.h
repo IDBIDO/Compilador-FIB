@@ -92,6 +92,9 @@ public:
   antlrcpp::Any visitArray_acess(AslParser::Array_acessContext *ctx);
   antlrcpp::Any visitIdent(AslParser::IdentContext *ctx);
 
+  antlrcpp::Any visitUnary(AslParser::UnaryContext *ctx);
+
+
 private:
 
   // Attributes

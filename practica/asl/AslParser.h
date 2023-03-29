@@ -14,12 +14,12 @@ public:
   enum {
     T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, ARRAY = 6, OF = 7, 
     ASSIGN = 8, EQUAL = 9, NEQ = 10, GT = 11, LT = 12, GE = 13, LE = 14, 
-    PLUS = 15, MUL = 16, SUB = 17, DIV = 18, AND = 19, OR = 20, NOT = 21, 
-    LPAR = 22, RPAR = 23, VAR = 24, INT = 25, BOOL = 26, FLOAT = 27, CHAR = 28, 
-    IF = 29, THEN = 30, ELSE = 31, ENDIF = 32, WHILE = 33, DO = 34, ENDWHILE = 35, 
-    RETURN = 36, FUNC = 37, ENDFUNC = 38, READ = 39, WRITE = 40, BOOLVAL = 41, 
-    ID = 42, INTVAL = 43, FLOATVAL = 44, CHARVAL = 45, STRING = 46, COMMENT = 47, 
-    WS = 48
+    PLUS = 15, MUL = 16, SUB = 17, DIV = 18, MOD = 19, AND = 20, OR = 21, 
+    NOT = 22, LPAR = 23, RPAR = 24, VAR = 25, INT = 26, BOOL = 27, FLOAT = 28, 
+    CHAR = 29, IF = 30, THEN = 31, ELSE = 32, ENDIF = 33, WHILE = 34, DO = 35, 
+    ENDWHILE = 36, RETURN = 37, FUNC = 38, ENDFUNC = 39, READ = 40, WRITE = 41, 
+    BOOLVAL = 42, ID = 43, INTVAL = 44, FLOATVAL = 45, CHARVAL = 46, STRING = 47, 
+    COMMENT = 48, WS = 49
   };
 
   enum {
@@ -359,6 +359,7 @@ public:
     ExprContext* expr(size_t i);
     antlr4::tree::TerminalNode *MUL();
     antlr4::tree::TerminalNode *DIV();
+    antlr4::tree::TerminalNode *MOD();
     antlr4::tree::TerminalNode *PLUS();
     antlr4::tree::TerminalNode *SUB();
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -386,9 +387,9 @@ public:
 
     antlr4::Token *op = nullptr;
     ExprContext *expr();
+    antlr4::tree::TerminalNode *NOT();
     antlr4::tree::TerminalNode *SUB();
     antlr4::tree::TerminalNode *PLUS();
-    antlr4::tree::TerminalNode *NOT();
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 

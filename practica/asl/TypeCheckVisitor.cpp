@@ -285,24 +285,37 @@ antlrcpp::Any TypeCheckVisitor::visitParen(AslParser::ParenContext *ctx) {
   return 0;
 }
 
+// expr op=(MUL|DIV|MOD) expr 
 antlrcpp::Any TypeCheckVisitor::visitArithmetic(AslParser::ArithmeticContext *ctx) {
   DEBUG_ENTER();
   visit(ctx->expr(0));
   visit(ctx->expr(1));
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
-  if ((not Types.isErrorTy(t1) and not Types.isNumericTy(t1) and not Types.isFloatTy(t1)) or
-      (not Types.isErrorTy(t2) and not Types.isNumericTy(t2) and not Types.isFloatTy(t2)))
-    Errors.incompatibleOperator(ctx->op);
+
   TypesMgr::TypeId t;
-  if (Types.isFloatTy(t1) or Types.isFloatTy(t2))
-      t = Types.createFloatTy();
-  else t = Types.createIntegerTy();
+  if (ctx->MOD()) {
+    if ((not Types.isErrorTy(t1) and not Types.isIntegerTy(t1)) or 
+        (not Types.isErrorTy(t2) and not Types.isIntegerTy(t2))
+    ) Errors.incompatibleOperator(ctx->op);
+    t = Types.createIntegerTy();
+
+  }
+  else {
+    if ((not Types.isErrorTy(t1) and not Types.isNumericTy(t1)) or
+        (not Types.isErrorTy(t2) and not Types.isNumericTy(t2)))
+      Errors.incompatibleOperator(ctx->op);
+    
+    if (Types.isFloatTy(t1) or Types.isFloatTy(t2))
+        t = Types.createFloatTy();
+    else t = Types.createIntegerTy();
+  }
   putTypeDecor(ctx, t);
   putIsLValueDecor(ctx, false);
   DEBUG_EXIT();
   return 0;
 }
+
 
 antlrcpp::Any TypeCheckVisitor::visitLogic(AslParser::LogicContext *ctx) {
   DEBUG_ENTER();
@@ -397,36 +410,81 @@ antlrcpp::Any TypeCheckVisitor::visitIdent(AslParser::IdentContext *ctx) {
   return 0;
 }
 
+// op=(SUB|PLUS|NOT) expr 
+antlrcpp::Any TypeCheckVisitor:: visitUnary(AslParser::UnaryContext *ctx) {
+  DEBUG_ENTER();
+  //while(1) {}
+  visit(ctx->expr());
+  TypesMgr::TypeId t1 = getTypeDecor(ctx->expr());
+
+  if (ctx->NOT()) { // expr es booleano
+    if (not Types.isErrorTy(t1) and not Types.isBooleanTy(t1)) 
+      Errors.incompatibleOperator(ctx->op);
+
+    if (Types.isBooleanTy(t1)) t1 = Types.createBooleanTy();
+  }
+  else {    // SUB or PLUS
+
+    if (not Types.isErrorTy(t1) and not Types.isNumericTy(t1))
+      Errors.incompatibleOperator(ctx->op);
+
+    if (Types.isFloatTy(t1)) t1 = Types.createFloatTy();
+    else  t1 = Types.createIntegerTy();
+    
+  }
+  putTypeDecor(ctx, t1);
+  putIsLValueDecor(ctx, false);
+
+  DEBUG_EXIT();
+  return 0;
+}
+
 //ident '(' ')' //DCE: ahor apuede ser ident (expr (',' expr)*)? por ejemplo f(a+3); JP_8
 antlrcpp::Any TypeCheckVisitor::visitFunction_call(AslParser::Function_callContext *ctx) {
   DEBUG_ENTER();
   visit(ctx-> ident());   // comprobar si existe el ident
+
   TypesMgr::TypeId tID = getTypeDecor(ctx->ident());  // tipo de nodo de ident
-  TypesMgr::TypeId tFunc = Types.createErrorTy();
-  if (not Types.isFunctionTy(tID) and not Types.isErrorTy(tID))
+  TypesMgr::TypeId tFunc = Types.createErrorTy();   //retorno de la funcion
+
+
+  if (not Types.isFunctionTy(tID) and not Types.isErrorTy(tID))   // no da error pero no es tipo funcion 
     Errors.isNotCallable(ctx->ident());
+
+
   if (Types.isFunctionTy(tID)) {
+    
     if (Types.isVoidFunction(tID))
         Errors.isNotFunction(ctx->ident());
-    else tFunc = Types.getFuncReturnType(tID);
+    else tFunc = Types.getFuncReturnType(tID);  // no es void, cogemos su return type
 
-    if(Types.getNumOfParameters(tID) != ctx->expr().size())
+    if(Types.getNumOfParameters(tID) != ctx->expr().size()) {
       Errors.numberOfParameters(ctx->ident());
-    else{
-      for(uint i = 0; i < ctx->expr().size(); ++i){
-        visit(ctx->expr(i));
-        TypesMgr::TypeId t1 = Types.getParameterType(tID, i);
-        TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(i));
-        
-        //std::cout << "t1 " << Types.to_string_basic(t1) << "\n";
-        //std::cout << "t2 " << Types.to_string_basic(t2) << "\n";
-        if(not(Types.isFloatTy(t1)and Types.isIntegerTy(t2))
-          and not Types.isErrorTy(t1) and not Types.isErrorTy(t2)){
-          if(not Types.equalTypes(t1,t2)) Errors.incompatibleParameter(ctx->expr(i),i+1,ctx);
-        }
+    }
+    else {
+    for(uint i = 0; i < ctx->expr().size(); ++i){
+      //while(1);
+      visit(ctx->expr(i));
+      TypesMgr::TypeId t1 = Types.getParameterType(tID, i);
+      TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(i));
+      
+      //std::cout << "t1 " << Types.to_string_basic(t1) << "\n";
+      //std::cout << "t2 " << Types.to_string_basic(t2) << "\n";
+      if(not(Types.isFloatTy(t1) and Types.isIntegerTy(t2))
+        and not Types.isErrorTy(t1) and not Types.isErrorTy(t2)){
+        if(not Types.equalTypes(t1,t2)) Errors.incompatibleParameter(ctx->expr(i),i+1,ctx);
       }
     }
+    }
+    
+  } else {      // si no esta definida, igualmente se visita
+    for(uint i = 0; i < ctx->expr().size(); ++i){
+      //while(1);
+      visit(ctx->expr(i));
+    }
   }
+
+
   putTypeDecor(ctx, tFunc);
   putIsLValueDecor(ctx, false);
   DEBUG_EXIT();
