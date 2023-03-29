@@ -294,7 +294,7 @@ antlrcpp::Any TypeCheckVisitor::visitArithmetic(AslParser::ArithmeticContext *ct
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
 
   TypesMgr::TypeId t;
-  if (ctx->MOD()) {
+  if (ctx->MOD()) {     // MOD  solo enteros
     if ((not Types.isErrorTy(t1) and not Types.isIntegerTy(t1)) or 
         (not Types.isErrorTy(t2) and not Types.isIntegerTy(t2))
     ) Errors.incompatibleOperator(ctx->op);
@@ -308,8 +308,8 @@ antlrcpp::Any TypeCheckVisitor::visitArithmetic(AslParser::ArithmeticContext *ct
     
     if (Types.isFloatTy(t1) or Types.isFloatTy(t2))
         t = Types.createFloatTy();
-    else t = Types.createIntegerTy();
-  }
+    else t = Types.createIntegerTy();   // da igual el tipo que sea
+  }                                     // para * o /, siempre sabemos que es entero
   putTypeDecor(ctx, t);
   putIsLValueDecor(ctx, false);
   DEBUG_EXIT();
@@ -477,7 +477,7 @@ antlrcpp::Any TypeCheckVisitor::visitFunction_call(AslParser::Function_callConte
     }
     }
     
-  } else {      // si no esta definida, igualmente se visita
+  } else {      // si no esta definida, igualmente se visita los parametros
     for(uint i = 0; i < ctx->expr().size(); ++i){
       //while(1);
       visit(ctx->expr(i));
