@@ -17,6 +17,8 @@ $> javac *java
 grun Asl program -tree ../examples/jpbasic_chkt_01.asl
 grun Asl program -gui ../examples/jpbasic_chkt_01.asl
 
+
+grun ./asl -tree ../examples/jp_chkt_01.asl
 ---------------------------------------------
 
 compilar:
