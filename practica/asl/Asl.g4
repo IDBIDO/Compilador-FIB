@@ -52,6 +52,16 @@ declarations
 variable_decl
         : VAR ID (',' ID)* ':' type
         ;
+        
+type    
+        : simple_type
+        | array_type
+        | struct_type
+        ;
+
+struct_type 
+        : 'struct' '{' (ID ':' simple_type) (',' ID ':' simple_type)* '}'
+        ;
 
 array_type
         : ARRAY '[' INTVAL ']' OF simple_type
@@ -64,19 +74,20 @@ simple_type
         | CHAR
         ;
 
-type    
-        : simple_type
-        | array_type
-        ;
-
 statements
         : (statement)*
+        ;
+
+array_map
+        : '[' expr '?' expr ':' expr 'for' ident 'in' ident ']'
         ;
 
 // The different types of instructions
 statement
           // Assignment
         : left_expr ASSIGN expr ';'           # assignStmt
+        | left_expr ASSIGN array_map ';'       # arrayMap
+
           // A while loop  with a bool expresion and some statements
         | WHILE expr DO statements ENDWHILE    # whileStmt
           // if-then-else statement (else is optional)
@@ -96,12 +107,16 @@ statement
 // Grammar for left expressions (l-values in C++)
 left_expr
         : ident ('[' expr ']')?
+        | ident '.' ID 
         ;
 
 // Grammar for expressions with boolean, relational and aritmetic operators
 
 expr    : LPAR expr RPAR                            # paren
         | ident ('[' expr ']')                      # array_acess
+
+        | ident '.' ID                            # struct_acess 
+
         | ident '(' (expr (',' expr)* )? ')'        # function_call
         | op=(NOT|SUB|PLUS) expr                    # unary
         | expr op=(MUL|DIV|MOD) expr                    # arithmetic

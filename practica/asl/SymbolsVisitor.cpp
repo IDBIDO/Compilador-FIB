@@ -168,6 +168,7 @@ antlrcpp::Any SymbolsVisitor::visitSimple_type(AslParser::Simple_typeContext *ct
   return 0;
 }
 
+//ARRAY '[' INTVAL ']' OF simple_type
 antlrcpp::Any SymbolsVisitor::visitArray_type(AslParser::Array_typeContext *ctx) {
   DEBUG_ENTER();
   visit(ctx->INTVAL());
@@ -176,6 +177,14 @@ antlrcpp::Any SymbolsVisitor::visitArray_type(AslParser::Array_typeContext *ctx)
   TypesMgr::TypeId elemType = getTypeDecor(ctx->simple_type());
   TypesMgr::TypeId t = Types.createArrayTy(size, elemType);
   putTypeDecor(ctx, t);
+  DEBUG_EXIT();
+  return 0;
+}
+//'struct' '{' (ID ':' type) (',' ID ':' type)* '}'
+antlrcpp::Any SymbolsVisitor::visitStruct_type(AslParser::Struct_typeContext *ctx) {
+  DEBUG_ENTER();
+  
+
   DEBUG_EXIT();
   return 0;
 }

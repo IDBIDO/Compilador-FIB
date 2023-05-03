@@ -35,6 +35,14 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitType(AslParser::TypeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitStruct_type(AslParser::Struct_typeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitArray_type(AslParser::Array_typeContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -43,15 +51,19 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitType(AslParser::TypeContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual antlrcpp::Any visitStatements(AslParser::StatementsContext *ctx) override {
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitArray_map(AslParser::Array_mapContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitAssignStmt(AslParser::AssignStmtContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitArrayMap(AslParser::ArrayMapContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -108,6 +120,10 @@ public:
   }
 
   virtual antlrcpp::Any visitRelational(AslParser::RelationalContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitStruct_acess(AslParser::Struct_acessContext *ctx) override {
     return visitChildren(ctx);
   }
 

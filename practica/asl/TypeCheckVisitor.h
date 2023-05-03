@@ -89,11 +89,14 @@ public:
 
   antlrcpp::Any visitFunction_call(AslParser::Function_callContext *ctx); //06
 
-  antlrcpp::Any visitArray_acess(AslParser::Array_acessContext *ctx);
+  antlrcpp::Any visitArray_acess(AslParser::Array_acessContext *ctx); //
   antlrcpp::Any visitIdent(AslParser::IdentContext *ctx);
 
   antlrcpp::Any visitUnary(AslParser::UnaryContext *ctx);
 
+  antlrcpp::Any visitArrayMap(AslParser::ArrayMapContext *ctx);
+
+  antlrcpp::Any visitStruct_acess(AslParser::Struct_acessContext *ctx);
 
 private:
 

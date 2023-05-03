@@ -29,15 +29,21 @@ public:
 
     virtual antlrcpp::Any visitVariable_decl(AslParser::Variable_declContext *context) = 0;
 
+    virtual antlrcpp::Any visitType(AslParser::TypeContext *context) = 0;
+
+    virtual antlrcpp::Any visitStruct_type(AslParser::Struct_typeContext *context) = 0;
+
     virtual antlrcpp::Any visitArray_type(AslParser::Array_typeContext *context) = 0;
 
     virtual antlrcpp::Any visitSimple_type(AslParser::Simple_typeContext *context) = 0;
 
-    virtual antlrcpp::Any visitType(AslParser::TypeContext *context) = 0;
-
     virtual antlrcpp::Any visitStatements(AslParser::StatementsContext *context) = 0;
 
+    virtual antlrcpp::Any visitArray_map(AslParser::Array_mapContext *context) = 0;
+
     virtual antlrcpp::Any visitAssignStmt(AslParser::AssignStmtContext *context) = 0;
+
+    virtual antlrcpp::Any visitArrayMap(AslParser::ArrayMapContext *context) = 0;
 
     virtual antlrcpp::Any visitWhileStmt(AslParser::WhileStmtContext *context) = 0;
 
@@ -66,6 +72,8 @@ public:
     virtual antlrcpp::Any visitArithmetic(AslParser::ArithmeticContext *context) = 0;
 
     virtual antlrcpp::Any visitRelational(AslParser::RelationalContext *context) = 0;
+
+    virtual antlrcpp::Any visitStruct_acess(AslParser::Struct_acessContext *context) = 0;
 
     virtual antlrcpp::Any visitUnary(AslParser::UnaryContext *context) = 0;
 

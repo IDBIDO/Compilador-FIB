@@ -153,6 +153,73 @@ antlrcpp::Any TypeCheckVisitor::visitStatements(AslParser::StatementsContext *ct
   return 0;
 }
 
+//left_expr ASSIGN array_map
+//'[' expr '?' expr ':' expr 'for' ident 'in' ident ']' # arrayMap
+/*
+  En aquest joc de proves, cal comprovar que els arrays tenen la mateixa
+  mida i que la variable del for  ́es del tipus dels elements de l’array origen.
+*/
+// JOC 2
+// C = [ a > c ? a %2==0 : a *b >5 for s in A ];
+// 1. C es mateixa mida que A
+// 2. s es del tipus dels elements de A
+
+// JOC 3
+// la condicio sigui booleana 
+// es expressions assignades siguin del mateix tipus que els elements de l’array dest ́ı.
+
+antlrcpp::Any TypeCheckVisitor::visitArrayMap(AslParser::ArrayMapContext *ctx) {
+  DEBUG_ENTER();
+  // visit left array
+  visit(ctx->left_expr());
+  // left array id
+  TypesMgr::TypeId tLeft = getTypeDecor(ctx->left_expr());
+  // get array elem type
+  TypesMgr::TypeId tElem = Types.getArrayElemType(tLeft);
+
+  // for elem type
+  visit(ctx->array_map()->ident(0));
+  TypesMgr::TypeId tFor = getTypeDecor(ctx->array_map()->ident(0));
+  //right array id 
+  visit(ctx->array_map()->ident(1));
+  TypesMgr::TypeId tRight = getTypeDecor(ctx->array_map()->ident(1));
+  TypesMgr::TypeId tRightElem = Types.getArrayElemType(tRight);
+  // check if for elem type is the same as original array elem type
+  if ( (not Types.isErrorTy(tRightElem)) and (not Types.isErrorTy(tFor)) and (not Types.equalTypes(tRightElem, tFor)) ) {
+    if ( not (Types.isFloatTy(tFor) and Types.isIntegerTy(tRightElem)) )
+      Errors.incompatibleAssignment(ctx->ASSIGN()); 
+  }
+
+  // get array size
+  unsigned int leftSize = Types.getArraySize(tLeft);
+  unsigned int rightSize = Types.getArraySize(tRight);
+  if (leftSize != rightSize) {
+    Errors.numberOfParameters(ctx->array_map()->ident(1)); 
+  }
+
+
+  // check if assign expressions same types than destination array 
+  visit(ctx->array_map()->expr(1));
+  TypesMgr::TypeId tExpr1 = getTypeDecor(ctx->array_map()-> expr(1));
+  visit(ctx->array_map()->expr(2));
+  TypesMgr::TypeId tExpr2 = getTypeDecor(ctx->array_map()->expr(2));
+
+  if ( ( (not Types.isErrorTy(tExpr1)) and (not Types.isErrorTy(tExpr2)) and (not Types.isErrorTy(tElem)) ) 
+  and ( (not Types.equalTypes(tElem, tExpr1)) or (not Types.equalTypes(tElem, tExpr2)) ) ) {
+    if (not ( (Types.isIntegerTy(tExpr1) or Types.isIntegerTy(tExpr2)) and Types.isFloatTy(tElem)) )
+      Errors.nonReferenceableExpression(ctx);
+  }
+
+  // check if condition is boolean
+  visit(ctx-> array_map()->expr(0));
+  TypesMgr::TypeId tCond = getTypeDecor(ctx->array_map()-> expr(0));
+  if (not Types.isErrorTy(tCond) and not(Types.isBooleanTy(tCond))) Errors.booleanRequired(ctx);
+
+
+  DEBUG_EXIT();
+  return 0;
+}
+
 antlrcpp::Any TypeCheckVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx) {
   DEBUG_ENTER();
   visit(ctx->left_expr());
@@ -263,6 +330,7 @@ antlrcpp::Any TypeCheckVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx)
     TypesMgr::TypeId tIndex = getTypeDecor(ctx->expr());
     if (not Types.isErrorTy(tIndex) and not Types.isIntegerTy(tIndex))      //tIndex no es error
       Errors.nonIntegerIndexInArrayAccess(ctx->expr());                     //tIndex no es un int!
+
     if (not Types.isErrorTy(tId) and not Types.isArrayTy(tId)) {            //tID no es Err
       Errors.nonArrayInArrayAccess(ctx);                                    //tID no es Array!
       knowArrayType = false;
@@ -371,6 +439,7 @@ antlrcpp::Any TypeCheckVisitor::visitExprIdent(AslParser::ExprIdentContext *ctx)
   return 0;
 }
 
+//ident ('[' expr ']') 
 antlrcpp::Any TypeCheckVisitor::visitArray_acess(AslParser::Array_acessContext *ctx) {
   DEBUG_ENTER();
   visit(ctx-> ident());   // comprobar si existe el ident
@@ -386,6 +455,16 @@ antlrcpp::Any TypeCheckVisitor::visitArray_acess(AslParser::Array_acessContext *
     Errors.nonIntegerIndexInArrayAccess(ctx->expr());                     //tIndex no es un int!
   putTypeDecor(ctx, tElem);
   putIsLValueDecor(ctx, true);              // Una posicion de un array es asignable
+  DEBUG_EXIT();
+  return 0;
+}
+
+// ident '.' ID
+antlrcpp::Any TypeCheckVisitor::visitStruct_acess(AslParser::Struct_acessContext *ctx) {
+  DEBUG_ENTER();
+  
+
+
   DEBUG_EXIT();
   return 0;
 }

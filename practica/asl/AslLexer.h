@@ -12,14 +12,15 @@
 class  AslLexer : public antlr4::Lexer {
 public:
   enum {
-    T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, ARRAY = 6, OF = 7, 
-    ASSIGN = 8, EQUAL = 9, NEQ = 10, GT = 11, LT = 12, GE = 13, LE = 14, 
-    PLUS = 15, MUL = 16, SUB = 17, DIV = 18, MOD = 19, AND = 20, OR = 21, 
-    NOT = 22, LPAR = 23, RPAR = 24, VAR = 25, INT = 26, BOOL = 27, FLOAT = 28, 
-    CHAR = 29, IF = 30, THEN = 31, ELSE = 32, ENDIF = 33, WHILE = 34, DO = 35, 
-    ENDWHILE = 36, RETURN = 37, FUNC = 38, ENDFUNC = 39, READ = 40, WRITE = 41, 
-    BOOLVAL = 42, ID = 43, INTVAL = 44, FLOATVAL = 45, CHARVAL = 46, STRING = 47, 
-    COMMENT = 48, WS = 49
+    T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, T__5 = 6, T__6 = 7, 
+    T__7 = 8, T__8 = 9, T__9 = 10, T__10 = 11, T__11 = 12, ARRAY = 13, OF = 14, 
+    ASSIGN = 15, EQUAL = 16, NEQ = 17, GT = 18, LT = 19, GE = 20, LE = 21, 
+    PLUS = 22, MUL = 23, SUB = 24, DIV = 25, MOD = 26, AND = 27, OR = 28, 
+    NOT = 29, LPAR = 30, RPAR = 31, VAR = 32, INT = 33, BOOL = 34, FLOAT = 35, 
+    CHAR = 36, IF = 37, THEN = 38, ELSE = 39, ENDIF = 40, WHILE = 41, DO = 42, 
+    ENDWHILE = 43, RETURN = 44, FUNC = 45, ENDFUNC = 46, READ = 47, WRITE = 48, 
+    BOOLVAL = 49, ID = 50, INTVAL = 51, FLOATVAL = 52, CHARVAL = 53, STRING = 54, 
+    COMMENT = 55, WS = 56
   };
 
   AslLexer(antlr4::CharStream *input);
