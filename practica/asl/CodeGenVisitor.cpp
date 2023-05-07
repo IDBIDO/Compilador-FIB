@@ -39,7 +39,7 @@
 #include <cstddef>    // std::size_t
 
 // uncomment the following line to enable debugging messages with DEBUG*
-// #define DEBUG_BUILD
+#define DEBUG_BUILD
 #include "../common/debug.h"
 
 // using namespace std;

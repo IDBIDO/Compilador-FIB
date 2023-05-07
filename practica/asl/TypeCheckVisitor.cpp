@@ -323,8 +323,14 @@ antlrcpp::Any TypeCheckVisitor::visitLogic(AslParser::LogicContext *ctx) {
   visit(ctx->expr(1));
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
+  std::string oper = ctx->op->getText();
   if ((not Types.isErrorTy(t1) and not Types.isBooleanTy(t1)) or
-      (not Types.isErrorTy(t2) and not Types.isBooleanTy(t2))) 
+      (not Types.isErrorTy(t2) and not Types.isBooleanTy(t2)) //and 
+
+      //not Types.comparableTypes(t1, t2, oper)    
+      
+      ) 
+
     Errors.incompatibleOperator(ctx->op);
   putTypeDecor(ctx, Types.createBooleanTy());
   putIsLValueDecor(ctx, false);
@@ -421,7 +427,7 @@ antlrcpp::Any TypeCheckVisitor:: visitUnary(AslParser::UnaryContext *ctx) {
     if (not Types.isErrorTy(t1) and not Types.isBooleanTy(t1)) 
       Errors.incompatibleOperator(ctx->op);
 
-    if (Types.isBooleanTy(t1)) t1 = Types.createBooleanTy();
+    t1 = Types.createBooleanTy();
   }
   else {    // SUB or PLUS
 
@@ -432,6 +438,7 @@ antlrcpp::Any TypeCheckVisitor:: visitUnary(AslParser::UnaryContext *ctx) {
     else  t1 = Types.createIntegerTy();
     
   }
+  
   putTypeDecor(ctx, t1);
   putIsLValueDecor(ctx, false);
 
