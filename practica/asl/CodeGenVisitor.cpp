@@ -39,7 +39,7 @@
 #include <cstddef>    // std::size_t
 
 // uncomment the following line to enable debugging messages with DEBUG*
-#define DEBUG_BUILD
+//#define DEBUG_BUILD
 #include "../common/debug.h"
 
 // using namespace std;
@@ -101,8 +101,28 @@ antlrcpp::Any CodeGenVisitor::visitDeclarations(AslParser::DeclarationsContext *
   DEBUG_ENTER();
   std::vector<var> lvars;
   for (auto & varDeclCtx : ctx->variable_decl()) {
+    TypesMgr::TypeId   t1 = getTypeDecor(varDeclCtx->type());
+    std::size_t      size = Types.getSizeOfType(t1);
+    std::vector<var> lvars;
+  //std::cout << "pre:varDeclCtx " << "\n";
+    for (size_t i= 0; i < varDeclCtx->ID().size(); ++i){
+
+        //std::cout << "pre:varDeclCtx " << Types.to_string_basic(t1) << "\n";
+        if (Types.to_string(t1) == "boolean" || Types.to_string_basic(t1) == "character")
+            lvars.push_back({varDeclCtx->ID(i)->getText(), "integer", 1});
+        else lvars.push_back({varDeclCtx->ID(i)->getText(), Types.to_string(t1), size});
+
+    }
+  /*for (auto & onevar : lvars) {
+        std::cout << "pre:varDeclCtx " << onevar << "\n";
+  }*/
+
+  //std::cout << "pre:varDeclCtx " << "\n";
+
+  /*std::cout << "pre:varDeclCtx " << "\n";
     var onevar = visit(varDeclCtx);
-    lvars.push_back(onevar);
+  std::cout << "post:varDeclCtx " << "\n";*/
+    //lvars.push_back(onevar);
   }
   DEBUG_EXIT();
   return lvars;
@@ -110,10 +130,17 @@ antlrcpp::Any CodeGenVisitor::visitDeclarations(AslParser::DeclarationsContext *
 
 antlrcpp::Any CodeGenVisitor::visitVariable_decl(AslParser::Variable_declContext *ctx) {
   DEBUG_ENTER();
+
+  std::cout << "pre:visitVariable_decl " << "\n";
   TypesMgr::TypeId   t1 = getTypeDecor(ctx->type());
   std::size_t      size = Types.getSizeOfType(t1);
+  std::vector<var> lvars;
+  for (size_t i= 0; i < ctx->ID().size(); ++i)
+    //lvars.push_back({ctx->ID(i)->getText(), Types.to_string(t1), size});
+  //return var{ctx->ID(0)->getText(), Types.to_string(t1), size};   // ct->ID(0)
+  std::cout << "post:visitVariable_decl " << "\n";
   DEBUG_EXIT();
-  return var{ctx->ID(0)->getText(), Types.to_string(t1), size};   // ct->ID(0)
+  return lvars;   // ct->ID(0)
 }
 
 antlrcpp::Any CodeGenVisitor::visitStatements(AslParser::StatementsContext *ctx) {

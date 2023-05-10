@@ -108,7 +108,7 @@ antlrcpp::Any SymbolsVisitor::visitParams(AslParser::ParamsContext *ctx) {
       Errors.declaredIdent(ctx->ID(i));
     else {
       TypesMgr::TypeId t = getTypeDecor(ctx->type(i));
-      Symbols.addLocalVar(ident, t);              // Añadimos como variable local
+      Symbols.addParameter(ident, t);              // Añadimos como variable local
     }
   }
   DEBUG_EXIT();
