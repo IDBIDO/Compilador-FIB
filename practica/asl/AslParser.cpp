@@ -54,7 +54,6 @@ size_t AslParser::ProgramContext::getRuleIndex() const {
   return AslParser::RuleProgram;
 }
 
-
 antlrcpp::Any AslParser::ProgramContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
     return parserVisitor->visitProgram(this);
@@ -133,7 +132,6 @@ AslParser::TypeContext* AslParser::FunctionContext::type() {
 size_t AslParser::FunctionContext::getRuleIndex() const {
   return AslParser::RuleFunction;
 }
-
 
 antlrcpp::Any AslParser::FunctionContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
@@ -220,7 +218,6 @@ size_t AslParser::ParamsContext::getRuleIndex() const {
   return AslParser::RuleParams;
 }
 
-
 antlrcpp::Any AslParser::ParamsContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
     return parserVisitor->visitParams(this);
@@ -300,7 +297,6 @@ size_t AslParser::DeclarationsContext::getRuleIndex() const {
   return AslParser::RuleDeclarations;
 }
 
-
 antlrcpp::Any AslParser::DeclarationsContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
     return parserVisitor->visitDeclarations(this);
@@ -365,7 +361,6 @@ AslParser::TypeContext* AslParser::Variable_declContext::type() {
 size_t AslParser::Variable_declContext::getRuleIndex() const {
   return AslParser::RuleVariable_decl;
 }
-
 
 antlrcpp::Any AslParser::Variable_declContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
@@ -442,7 +437,6 @@ size_t AslParser::Array_typeContext::getRuleIndex() const {
   return AslParser::RuleArray_type;
 }
 
-
 antlrcpp::Any AslParser::Array_typeContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
     return parserVisitor->visitArray_type(this);
@@ -509,7 +503,6 @@ size_t AslParser::Simple_typeContext::getRuleIndex() const {
   return AslParser::RuleSimple_type;
 }
 
-
 antlrcpp::Any AslParser::Simple_typeContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
     return parserVisitor->visitSimple_type(this);
@@ -569,7 +562,6 @@ AslParser::Array_typeContext* AslParser::TypeContext::array_type() {
 size_t AslParser::TypeContext::getRuleIndex() const {
   return AslParser::RuleType;
 }
-
 
 antlrcpp::Any AslParser::TypeContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
@@ -638,7 +630,6 @@ AslParser::StatementContext* AslParser::StatementsContext::statement(size_t i) {
 size_t AslParser::StatementsContext::getRuleIndex() const {
   return AslParser::RuleStatements;
 }
-
 
 antlrcpp::Any AslParser::StatementsContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
@@ -723,7 +714,6 @@ AslParser::ExprContext* AslParser::ProcCallContext::expr(size_t i) {
 
 AslParser::ProcCallContext::ProcCallContext(StatementContext *ctx) { copyFrom(ctx); }
 
-
 antlrcpp::Any AslParser::ProcCallContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
     return parserVisitor->visitProcCall(this);
@@ -741,7 +731,6 @@ AslParser::ExprContext* AslParser::WriteExprContext::expr() {
 }
 
 AslParser::WriteExprContext::WriteExprContext(StatementContext *ctx) { copyFrom(ctx); }
-
 
 antlrcpp::Any AslParser::WriteExprContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
@@ -772,7 +761,6 @@ tree::TerminalNode* AslParser::WhileStmtContext::ENDWHILE() {
 }
 
 AslParser::WhileStmtContext::WhileStmtContext(StatementContext *ctx) { copyFrom(ctx); }
-
 
 antlrcpp::Any AslParser::WhileStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
@@ -812,7 +800,6 @@ tree::TerminalNode* AslParser::IfStmtContext::ELSE() {
 
 AslParser::IfStmtContext::IfStmtContext(StatementContext *ctx) { copyFrom(ctx); }
 
-
 antlrcpp::Any AslParser::IfStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
     return parserVisitor->visitIfStmt(this);
@@ -830,7 +817,6 @@ AslParser::Left_exprContext* AslParser::ReadStmtContext::left_expr() {
 }
 
 AslParser::ReadStmtContext::ReadStmtContext(StatementContext *ctx) { copyFrom(ctx); }
-
 
 antlrcpp::Any AslParser::ReadStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
@@ -854,7 +840,6 @@ AslParser::ExprContext* AslParser::AssignStmtContext::expr() {
 
 AslParser::AssignStmtContext::AssignStmtContext(StatementContext *ctx) { copyFrom(ctx); }
 
-
 antlrcpp::Any AslParser::AssignStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
     return parserVisitor->visitAssignStmt(this);
@@ -873,7 +858,6 @@ AslParser::ExprContext* AslParser::ReturnStmtContext::expr() {
 
 AslParser::ReturnStmtContext::ReturnStmtContext(StatementContext *ctx) { copyFrom(ctx); }
 
-
 antlrcpp::Any AslParser::ReturnStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
     return parserVisitor->visitReturnStmt(this);
@@ -891,7 +875,6 @@ tree::TerminalNode* AslParser::WriteStringContext::STRING() {
 }
 
 AslParser::WriteStringContext::WriteStringContext(StatementContext *ctx) { copyFrom(ctx); }
-
 
 antlrcpp::Any AslParser::WriteStringContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
@@ -1104,7 +1087,6 @@ size_t AslParser::Left_exprContext::getRuleIndex() const {
   return AslParser::RuleLeft_expr;
 }
 
-
 antlrcpp::Any AslParser::Left_exprContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
     return parserVisitor->visitLeft_expr(this);
@@ -1178,7 +1160,6 @@ tree::TerminalNode* AslParser::ParenContext::RPAR() {
 
 AslParser::ParenContext::ParenContext(ExprContext *ctx) { copyFrom(ctx); }
 
-
 antlrcpp::Any AslParser::ParenContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
     return parserVisitor->visitParen(this);
@@ -1209,7 +1190,6 @@ AslParser::ExprContext* AslParser::Function_callContext::expr(size_t i) {
 
 AslParser::Function_callContext::Function_callContext(ExprContext *ctx) { copyFrom(ctx); }
 
-
 antlrcpp::Any AslParser::Function_callContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
     return parserVisitor->visitFunction_call(this);
@@ -1228,7 +1208,6 @@ AslParser::ExprContext* AslParser::Array_acessContext::expr() {
 
 AslParser::Array_acessContext::Array_acessContext(ExprContext *ctx) { copyFrom(ctx); }
 
-
 antlrcpp::Any AslParser::Array_acessContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
     return parserVisitor->visitArray_acess(this);
@@ -1242,7 +1221,6 @@ AslParser::IdentContext* AslParser::ExprIdentContext::ident() {
 }
 
 AslParser::ExprIdentContext::ExprIdentContext(ExprContext *ctx) { copyFrom(ctx); }
-
 
 antlrcpp::Any AslParser::ExprIdentContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
@@ -1281,7 +1259,6 @@ tree::TerminalNode* AslParser::ArithmeticContext::SUB() {
 }
 
 AslParser::ArithmeticContext::ArithmeticContext(ExprContext *ctx) { copyFrom(ctx); }
-
 
 antlrcpp::Any AslParser::ArithmeticContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
@@ -1325,7 +1302,6 @@ tree::TerminalNode* AslParser::RelationalContext::LE() {
 
 AslParser::RelationalContext::RelationalContext(ExprContext *ctx) { copyFrom(ctx); }
 
-
 antlrcpp::Any AslParser::RelationalContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
     return parserVisitor->visitRelational(this);
@@ -1351,7 +1327,6 @@ tree::TerminalNode* AslParser::UnaryContext::PLUS() {
 }
 
 AslParser::UnaryContext::UnaryContext(ExprContext *ctx) { copyFrom(ctx); }
-
 
 antlrcpp::Any AslParser::UnaryContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
@@ -1379,7 +1354,6 @@ tree::TerminalNode* AslParser::LogicContext::OR() {
 
 AslParser::LogicContext::LogicContext(ExprContext *ctx) { copyFrom(ctx); }
 
-
 antlrcpp::Any AslParser::LogicContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
     return parserVisitor->visitLogic(this);
@@ -1405,7 +1379,6 @@ tree::TerminalNode* AslParser::ValueContext::CHARVAL() {
 }
 
 AslParser::ValueContext::ValueContext(ExprContext *ctx) { copyFrom(ctx); }
-
 
 antlrcpp::Any AslParser::ValueContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))
@@ -1708,7 +1681,6 @@ tree::TerminalNode* AslParser::IdentContext::ID() {
 size_t AslParser::IdentContext::getRuleIndex() const {
   return AslParser::RuleIdent;
 }
-
 
 antlrcpp::Any AslParser::IdentContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<AslVisitor*>(visitor))

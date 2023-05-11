@@ -39,7 +39,7 @@
 #include <cstddef>    // std::size_t
 
 // uncomment the following line to enable debugging messages with DEBUG*
-//#define DEBUG_BUILD
+#define DEBUG_BUILD
 #include "../common/debug.h"
 
 // using namespace std;
@@ -159,14 +159,14 @@ antlrcpp::Any CodeGenVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx)
   instructionList code;
   CodeAttribs     && codAtsE1 = visit(ctx->left_expr());
   std::string           addr1 = codAtsE1.addr;
-  // std::string           offs1 = codAtsE1.offs;
+  std::string           offs1 = codAtsE1.offs;
   instructionList &     code1 = codAtsE1.code;
-  // TypesMgr::TypeId tid1 = getTypeDecor(ctx->left_expr());
+  TypesMgr::TypeId tid1 = getTypeDecor(ctx->left_expr());
   CodeAttribs     && codAtsE2 = visit(ctx->expr());
   std::string           addr2 = codAtsE2.addr;
-  // std::string           offs2 = codAtsE2.offs;
+  std::string           offs2 = codAtsE2.offs;
   instructionList &     code2 = codAtsE2.code;
-  // TypesMgr::TypeId tid2 = getTypeDecor(ctx->expr());
+  TypesMgr::TypeId tid2 = getTypeDecor(ctx->expr());
   code = code1 || code2 || instruction::LOAD(addr1, addr2);
   DEBUG_EXIT();
   return code;
@@ -248,8 +248,38 @@ antlrcpp::Any visitArray_index(AslParser::Array_acessContext *ctx) {
   
 }
 
+antlrcpp::Any CodeGenVisitor::visitParen(AslParser::ParenContext *ctx) {
+  DEBUG_ENTER();
+  CodeAttribs     && codAt1 = visit(ctx->expr());
+  std::string         addr1 = codAt1.addr;
+  instructionList &   code1 = codAt1.code;
+  CodeAttribs codAts(addr1, "", code1);
+  DEBUG_EXIT();
+  return codAts;
+}
+
+antlrcpp::Any CodeGenVisitor::visitUnary(AslParser::UnaryContext *ctx) {
+  DEBUG_ENTER();
+  CodeAttribs     && codAt1 = visit(ctx->expr());
+  std::string         addr1 = codAt1.addr;
+  instructionList &   code1 = codAt1.code;
+  std::string temp = "%"+codeCounters.newTEMP();
+
+  if (ctx->NOT())
+    code1 = code1 || instruction::NOT(temp, addr1);
+  else if (ctx->SUB())
+    code1 = code1 || instruction::NEG(temp, addr1);
+  else if (ctx->PLUS())
+    temp = addr1;
+
+  CodeAttribs codAts(temp, "", code1);
+  DEBUG_EXIT();
+  return codAts;
+}
+
 antlrcpp::Any CodeGenVisitor::visitArithmetic(AslParser::ArithmeticContext *ctx) {
   DEBUG_ENTER();
+  //std::cout << "visitArithmetic size " << ctx->expr().size() << "\n";
   CodeAttribs     && codAt1 = visit(ctx->expr(0));
   std::string         addr1 = codAt1.addr;
   instructionList &   code1 = codAt1.code;
@@ -257,14 +287,16 @@ antlrcpp::Any CodeGenVisitor::visitArithmetic(AslParser::ArithmeticContext *ctx)
   std::string         addr2 = codAt2.addr;
   instructionList &   code2 = codAt2.code;
   instructionList &&   code = code1 || code2;
-  // TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
-  // TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
-  // TypesMgr::TypeId  t = getTypeDecor(ctx);
+  TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
+  TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
+  TypesMgr::TypeId  t = getTypeDecor(ctx);
   std::string temp = "%"+codeCounters.newTEMP();
+  //std::cout << "visitArithmetic " << Types.to_string(t1) << " " << Types.to_string(t2) << " " << Types.to_string(t) << " " <<  "\n";
   if (ctx->MUL())
     code = code || instruction::MUL(temp, addr1, addr2);
   else // (ctx->PLUS())
     code = code || instruction::ADD(temp, addr1, addr2);
+  std::cout << code.dump() << "\n";
   CodeAttribs codAts(temp, "", code);
   DEBUG_EXIT();
   return codAts;
@@ -283,7 +315,7 @@ antlrcpp::Any CodeGenVisitor::visitRelational(AslParser::RelationalContext *ctx)
   // TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
   // TypesMgr::TypeId  t = getTypeDecor(ctx);
   std::string temp = "%"+codeCounters.newTEMP();
-  code = code || instruction::EQ(temp, addr1, addr2);
+  code = code || instruction::EQ(temp, addr1, addr2); //AQUI AÑADIR TODAS LAS COMPARACIONES LOLZ
   CodeAttribs codAts(temp, "", code);
   DEBUG_EXIT();
   return codAts;
