@@ -286,10 +286,43 @@ antlrcpp::Any CodeGenVisitor::visitArithmetic(AslParser::ArithmeticContext *ctx)
   TypesMgr::TypeId  t = getTypeDecor(ctx);
   std::string temp = "%"+codeCounters.newTEMP();
   //std::cout << "visitArithmetic " << Types.to_string(t1) << " " << Types.to_string(t2) << " " << Types.to_string(t) << " " <<  "\n";
-  if (ctx->MUL())
-    code = code || instruction::MUL(temp, addr1, addr2);
-  else // (ctx->PLUS())
-    code = code || instruction::ADD(temp, addr1, addr2);
+
+  if (Types.isFloatTy(t)){
+    std::string         addrF1 = codAt1.addr;
+    std::string         addrF2 = codAt2.addr;
+      if (not Types.isFloatTy(t1)){
+        addrF1 = "%"+codeCounters.newTEMP();
+        code = code || instruction::FLOAT(addrF1, addr1);
+    }
+      if (not Types.isFloatTy(t2)){
+        addrF2 = "%"+codeCounters.newTEMP();
+        code = code || instruction::FLOAT(addrF2, addr2);
+    }
+    if (ctx->MUL())
+        code = code || instruction::FMUL(temp, addrF1, addrF2);
+    else if (ctx->PLUS())
+        code = code || instruction::FADD(temp, addrF1, addrF2);
+    else if (ctx->SUB())
+        code = code || instruction::FSUB(temp, addrF1, addrF2);
+    else if (ctx->DIV())
+        code = code || instruction::FDIV(temp, addrF1, addrF2);
+    /*else if (ctx->MOD())                                            Para el yo del futuro
+        code = code || instruction::ADD(temp, addr1, addr2);
+        */
+  }
+  else{
+    if (ctx->MUL())
+        code = code || instruction::MUL(temp, addr1, addr2);
+    else if (ctx->PLUS())
+        code = code || instruction::ADD(temp, addr1, addr2);
+    else if (ctx->SUB())
+        code = code || instruction::SUB(temp, addr1, addr2);
+    else if (ctx->DIV())
+        code = code || instruction::DIV(temp, addr1, addr2);
+    /*else if (ctx->MOD())                                            Para el yo del futuro
+        code = code || instruction::ADD(temp, addr1, addr2);
+        */
+  }
   //std::cout << code.dump() << "\n";
   CodeAttribs codAts(temp, "", code);
   DEBUG_EXIT();
@@ -334,7 +367,9 @@ antlrcpp::Any CodeGenVisitor::visitRelational(AslParser::RelationalContext *ctx)
    TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
    TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
    TypesMgr::TypeId  t = getTypeDecor(ctx);
-  std::string temp = "%"+codeCounters.newTEMP();
+  //std::string temp = "%"+codeCounters.newTEMP();
+    std::string temp1 = "%"+codeCounters.newTEMP();
+    std::string temp2 = "%"+codeCounters.newTEMP();
 
   //std::cout << "visitRelational " << Types.to_string(t1) << " " << Types.to_string(t2) << " " << Types.to_string(t) << " " <<  "\n";
   //std::cout << "visitRelational " << addr1 << " " << addr2 << " end!" <<  "\n";
@@ -342,7 +377,8 @@ antlrcpp::Any CodeGenVisitor::visitRelational(AslParser::RelationalContext *ctx)
   if (Types.isFloatTy(t1) || Types.isFloatTy(t2) || Types.isFloatTy(t)){
     std::string         addrF1 = codAt1.addr;
     std::string         addrF2 = codAt2.addr;
-    if (Types.isIntegerTy(t1)){
+
+        if (Types.isIntegerTy(t1)){
         addrF1 = "%"+codeCounters.newTEMP();
         code = code || instruction::FLOAT(addrF1, addr1);
     }
@@ -351,35 +387,35 @@ antlrcpp::Any CodeGenVisitor::visitRelational(AslParser::RelationalContext *ctx)
         code = code || instruction::FLOAT(addrF2, addr2);
     }
     if (ctx->EQUAL())
-        code = code || instruction::FEQ(temp, addrF1, addr2); //AQUI AÑADIR TODAS LAS COMPARACIONES LOLZ
+        code = code || instruction::FEQ(temp1, addrF1, addrF2); //AQUI AÑADIR TODAS LAS COMPARACIONES LOLZ
     else if (ctx->NEQ())
-        code = code || instruction::FEQ(temp, addrF1, addr2) || instruction::NOT(temp, addr1);
+        code = code || instruction::FEQ(temp2, addrF1, addrF2) || instruction::NOT(temp1, temp2);
     else if (ctx->GT())
-        code = code || instruction::FLE(temp, addrF1, addr2) || instruction::NOT(temp, addr1); //Como no hay code para GT, hay que concatenar LessEqual y luego hacer Not
+        code = code || instruction::FLE(temp2, addrF1, addrF2) || instruction::NOT(temp1, temp2); //Como no hay code para GT, hay que concatenar LessEqual y luego hacer Not
     else if (ctx->LT())
-        code = code || instruction::FLT(temp, addr1, addr2);
+        code = code || instruction::FLT(temp1, addrF1, addrF2);
     else if (ctx->GE())
-        code = code || instruction::FLT(temp, addr1, addr2) || instruction::NOT(temp, addr1);
+        code = code || instruction::FLT(temp2, addrF1, addrF2) || instruction::NOT(temp1, temp2);
     else if (ctx->LE())
-        code = code || instruction::FLE(temp, addr1, addr2);
+        code = code || instruction::FLE(temp1, addrF1, addrF2);
   }
   else{
     if (ctx->EQUAL())
-        code = code || instruction::EQ(temp, addr1, addr2); //AQUI AÑADIR TODAS LAS COMPARACIONES LOLZ
+        code = code || instruction::EQ(temp1, addr1, addr2); //AQUI AÑADIR TODAS LAS COMPARACIONES LOLZ
     else if (ctx->NEQ())
-        code = code || instruction::EQ(temp, addr1, addr2) || instruction::NOT(temp, addr1);
+        code = code || instruction::EQ(temp2, addr1, addr2) || instruction::NOT(temp1, temp2);
     else if (ctx->GT())
-        code = code || instruction::LE(temp, addr1, addr2) || instruction::NOT(temp, addr1); //Como no hay code para GT, hay que concatenar LessEqual y luego hacer Not
+        code = code || instruction::LE(temp2, addr1, addr2) || instruction::NOT(temp1, temp2); //Como no hay code para GT, hay que concatenar LessEqual y luego hacer Not
     else if (ctx->LT())
-        code = code || instruction::LT(temp, addr1, addr2);
+        code = code || instruction::LT(temp1, addr1, addr2);
     else if (ctx->GE())
-        code = code || instruction::LT(temp, addr1, addr2) || instruction::NOT(temp, addr1);
+        code = code || instruction::LT(temp2, addr1, addr2) || instruction::NOT(temp1, temp2);
     else if (ctx->LE())
-        code = code || instruction::LE(temp, addr1, addr2);
+        code = code || instruction::LE(temp1, addr1, addr2);
   }
 
   //std::cout << "endRelational " << addr1 << " " << addr2 << " end!" <<  "\n";
-  CodeAttribs codAts(temp, "", code);
+  CodeAttribs codAts(temp1, "", code);
   DEBUG_EXIT();
   return codAts;
 }
