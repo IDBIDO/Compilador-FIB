@@ -143,7 +143,7 @@ antlrcpp::Any CodeGenVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx)
   std::string           addr1 = codAtsE1.addr;
   std::string           offs1 = codAtsE1.offs;
   instructionList &     code1 = codAtsE1.code;
-  TypesMgr::TypeId tid1 = getTypeDecor(ctx->left_expr());
+//  TypesMgr::TypeId tid1 = getTypeDecor(ctx->left_expr());
 
   //std::cout << "visitAssignStmt1 " << addr1 << " " << offs1 << " end!" <<  "\n";
   //std::cout << "visitAssignStmt1 " << Types.to_string(tid1) << " end!" <<  "\n";
@@ -152,7 +152,39 @@ antlrcpp::Any CodeGenVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx)
   std::string           addr2 = codAtsE2.addr;
   std::string           offs2 = codAtsE2.offs;
   instructionList &     code2 = codAtsE2.code;
-  TypesMgr::TypeId tid2 = getTypeDecor(ctx->expr());
+  //TypesMgr::TypeId tid2 = getTypeDecor(ctx->expr());
+
+  //std::cout << "visitAssignStmt2 " << addr2 << " " << offs2 << " end!" <<  "\n";
+  //std::cout << "visitAssignStmt2 " << Types.to_string(tid2) << " end!" <<  "\n";
+
+  code = code1 || code2 || instruction::LOAD(addr1, addr2);
+  //std::cout << "exit " << addr1 << " " << addr2 << " end!" <<  "\n";
+  DEBUG_EXIT();
+  return code;
+}
+
+//WHILE expr DO statements ENDWHILE                             # whileStmt
+antlrcpp::Any CodeGenVisitor::visitWhileStmt(AslParser::WhileStmtContext *ctx) {
+  DEBUG_ENTER();
+  //std::cout << "visitWhileStmt " <<  "\n";
+  instructionList code;
+  CodeAttribs     && codAtsE1 = visit(ctx->expr());
+  std::string           addr1 = codAtsE1.addr;
+  std::string           offs1 = codAtsE1.offs;
+  instructionList &     code1 = codAtsE1.code;
+  TypesMgr::TypeId tid1 = getTypeDecor(ctx->expr());
+
+  //std::cout << "visitWhileStmt Addr & offset" << addr1 << " " << offs1 << " end!" <<  "\n";
+  //std::cout << "visitWhileStmt type: bool?" << Types.to_string(tid1) << " end!" <<  "\n";
+
+  instructionList &&   code3 = visit(ctx->statements());   // primer stmt, ctx->statements
+  //std::cout << "Check size" << ctx->statements().size() << " end!" <<  "\n";
+
+  CodeAttribs     && codAtsE2 = visit(ctx->expr());
+  std::string           addr2 = codAtsE2.addr;
+  std::string           offs2 = codAtsE2.offs;
+  instructionList &     code2 = codAtsE2.code;
+  //TypesMgr::TypeId tid2 = getTypeDecor(ctx->expr());
 
   //std::cout << "visitAssignStmt2 " << addr2 << " " << offs2 << " end!" <<  "\n";
   //std::cout << "visitAssignStmt2 " << Types.to_string(tid2) << " end!" <<  "\n";
@@ -170,6 +202,8 @@ antlrcpp::Any CodeGenVisitor::visitIfStmt(AslParser::IfStmtContext *ctx) {
   std::string          addr1 = codAtsE.addr;
   instructionList &    code1 = codAtsE.code;
   instructionList &&   code2 = visit(ctx->statements(0));   // primer stmt, ctx->statements
+  //if (ctx->statements().size() > 1) while(true){}
+    //std::cout<<"This is a warning, visitIfStmt only visits first child" << "\n";
   std::string label = codeCounters.newLabelIF();
   std::string labelEndIf = "endif"+label;
   code = code1 || instruction::FJUMP(addr1, labelEndIf) ||
@@ -242,7 +276,7 @@ antlrcpp::Any CodeGenVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx) {
 }
 
 antlrcpp::Any visitArray_index(AslParser::Array_acessContext *ctx) {
-  
+
 }
 
 antlrcpp::Any CodeGenVisitor::visitParen(AslParser::ParenContext *ctx) {
@@ -339,9 +373,9 @@ antlrcpp::Any CodeGenVisitor::visitLogic(AslParser::LogicContext *ctx) {
   std::string         addr2 = codAt2.addr;
   instructionList &   code2 = codAt2.code;
   instructionList &&   code = code1 || code2;
-  TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
-  TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
-  TypesMgr::TypeId  t = getTypeDecor(ctx);
+  //TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
+  //TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
+  //TypesMgr::TypeId  t = getTypeDecor(ctx);
   std::string temp = "%"+codeCounters.newTEMP();
   //std::cout << "visitArithmetic " << Types.to_string(t1) << " " << Types.to_string(t2) << " " << Types.to_string(t) << " " <<  "\n";
   if (ctx->AND())
@@ -378,7 +412,7 @@ antlrcpp::Any CodeGenVisitor::visitRelational(AslParser::RelationalContext *ctx)
     std::string         addrF1 = codAt1.addr;
     std::string         addrF2 = codAt2.addr;
 
-        if (Types.isIntegerTy(t1)){
+    if (Types.isIntegerTy(t1)){
         addrF1 = "%"+codeCounters.newTEMP();
         code = code || instruction::FLOAT(addrF1, addr1);
     }

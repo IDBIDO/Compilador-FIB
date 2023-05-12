@@ -76,21 +76,21 @@ statements
 // The different types of instructions
 statement
           // Assignment
-        : left_expr ASSIGN expr ';'           # assignStmt
+        : left_expr ASSIGN expr ';'                                     # assignStmt
           // A while loop  with a bool expresion and some statements
-        | WHILE expr DO statements ENDWHILE    # whileStmt
+        | WHILE expr DO statements ENDWHILE                             # whileStmt
           // if-then-else statement (else is optional)
-        | IF expr THEN statements (ELSE statements)? ENDIF       # ifStmt
+        | IF expr THEN statements (ELSE statements)? ENDIF              # ifStmt
           // A function/procedure call has a list of arguments in parenthesis (possibly empty)
-        | ident '(' (expr (',' expr)* )?')' ';'                   # procCall
+        | ident '(' (expr (',' expr)* )?')' ';'                         # procCall
           // Read a variable
-        | READ left_expr ';'                  # readStmt
+        | READ left_expr ';'                                            # readStmt
           // Write an expression
-        | WRITE expr ';'                      # writeExpr
+        | WRITE expr ';'                                                # writeExpr
           // Write a string
-        | WRITE STRING ';'                    # writeString
+        | WRITE STRING ';'                                              # writeString
           // return statement
-        | RETURN expr? ';'                    # returnStmt
+        | RETURN expr? ';'                                              # returnStmt
         ;
 
 // Grammar for left expressions (l-values in C++)
@@ -104,7 +104,7 @@ expr    : LPAR expr RPAR                            # paren
         | ident ('[' expr ']')                      # array_acess
         | ident '(' (expr (',' expr)* )? ')'        # function_call
         | op=(NOT|SUB|PLUS) expr                    # unary
-        | expr op=(MUL|DIV|MOD) expr                    # arithmetic
+        | expr op=(MUL|DIV|MOD) expr                # arithmetic
         | expr op=(PLUS|SUB) expr                   # arithmetic
         | expr op=(EQUAL|NEQ|GT|LT|GE|LE) expr      # relational
         | expr op=AND expr                          # logic    
@@ -166,7 +166,9 @@ FUNC      : 'func' ;
 ENDFUNC   : 'endfunc' ;
 READ      : 'read' ;
 WRITE     : 'write' ;
-BOOLVAL   : 'true'|'false' ;
+BOOLVAL   : (TRUE | FALSE) ;
+TRUE      : 'true' ;
+FALSE     : 'false' ;
 ID        : ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
 INTVAL    : ('0'..'9')+ ;
 FLOATVAL  : ('0'..'9')+ '.' ('0'..'9')+;

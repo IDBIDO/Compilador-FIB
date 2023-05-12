@@ -1,5 +1,5 @@
 
-// Generated from Asl.g4 by ANTLR 4.9.2
+// Generated from Asl.g4 by ANTLR 4.7.2
 
 #pragma once
 
@@ -18,11 +18,11 @@ public:
     NOT = 22, LPAR = 23, RPAR = 24, VAR = 25, INT = 26, BOOL = 27, FLOAT = 28, 
     CHAR = 29, IF = 30, THEN = 31, ELSE = 32, ENDIF = 33, WHILE = 34, DO = 35, 
     ENDWHILE = 36, RETURN = 37, FUNC = 38, ENDFUNC = 39, READ = 40, WRITE = 41, 
-    BOOLVAL = 42, ID = 43, INTVAL = 44, FLOATVAL = 45, CHARVAL = 46, STRING = 47, 
-    COMMENT = 48, WS = 49
+    BOOLVAL = 42, TRUE = 43, FALSE = 44, ID = 45, INTVAL = 46, FLOATVAL = 47, 
+    CHARVAL = 48, STRING = 49, COMMENT = 50, WS = 51
   };
 
-  explicit AslLexer(antlr4::CharStream *input);
+  AslLexer(antlr4::CharStream *input);
   ~AslLexer();
 
   virtual std::string getGrammarFileName() const override;
