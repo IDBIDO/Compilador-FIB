@@ -83,8 +83,26 @@ antlrcpp::Any CodeGenVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   DEBUG_ENTER();
   SymTable::ScopeId sc = getScopeDecor(ctx);
   Symbols.pushThisScope(sc);
+  
+  std::cout << "visitFunction1 " << "\n";
   subroutine subr(ctx->ID()->getText());
   codeCounters.reset();
+  
+
+  if (ctx->type() && ctx->type()->simple_type()){
+    visit(ctx->type()->simple_type());
+    subr.add_param("_result",Types.to_string(getTypeDecor(ctx->type()->simple_type())),false);
+  }
+  
+  std::cout << "visitFunction2 " << "\n";
+
+  std::vector<var> && lparams = visit(ctx->params());
+  for (uint i= 0; i< ctx->params()->ID().size(); ++i) {
+    subr.add_param(ctx->params()->ID(i)->getText(), Types.to_string(getTypeDecor(ctx->type())), false); //ya llegaremos a pasar arrays como params... el false seran muchas lineas de codigo
+  }
+
+  std::cout << "visitFunction3 " << "\n";
+
   std::vector<var> && lvars = visit(ctx->declarations());
   for (auto & onevar : lvars) {
     subr.add_var(onevar);
@@ -126,11 +144,13 @@ antlrcpp::Any CodeGenVisitor::visitVariable_decl(AslParser::Variable_declContext
 
 antlrcpp::Any CodeGenVisitor::visitStatements(AslParser::StatementsContext *ctx) {
   DEBUG_ENTER();
+  std::cout << "visitAssignStmt " <<  "\n";
   instructionList code;
   for (auto stCtx : ctx->statement()) {
     instructionList && codeS = visit(stCtx);
     code = code || codeS;
   }
+  std::cout << "visitAssignStmt " <<  "\n";
   DEBUG_EXIT();
   return code;
 }
