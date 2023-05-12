@@ -39,7 +39,7 @@
 #include <cstddef>    // std::size_t
 
 // uncomment the following line to enable debugging messages with DEBUG*
-//#define DEBUG_BUILD
+#define DEBUG_BUILD
 #include "../common/debug.h"
 
 // using namespace std;
@@ -143,7 +143,7 @@ antlrcpp::Any CodeGenVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx)
   std::string           addr1 = codAtsE1.addr;
   std::string           offs1 = codAtsE1.offs;
   instructionList &     code1 = codAtsE1.code;
-//  TypesMgr::TypeId tid1 = getTypeDecor(ctx->left_expr());
+  TypesMgr::TypeId tid1 = getTypeDecor(ctx->left_expr());
 
   //std::cout << "visitAssignStmt1 " << addr1 << " " << offs1 << " end!" <<  "\n";
   //std::cout << "visitAssignStmt1 " << Types.to_string(tid1) << " end!" <<  "\n";
@@ -152,12 +152,17 @@ antlrcpp::Any CodeGenVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx)
   std::string           addr2 = codAtsE2.addr;
   std::string           offs2 = codAtsE2.offs;
   instructionList &     code2 = codAtsE2.code;
-  //TypesMgr::TypeId tid2 = getTypeDecor(ctx->expr());
+//  TypesMgr::TypeId tid2 = getTypeDecor(ctx->expr());
 
   //std::cout << "visitAssignStmt2 " << addr2 << " " << offs2 << " end!" <<  "\n";
   //std::cout << "visitAssignStmt2 " << Types.to_string(tid2) << " end!" <<  "\n";
 
-  code = code1 || code2 || instruction::LOAD(addr1, addr2);
+  if (Types.isIntegerTy(tid1) || Types.isBooleanTy(tid1))
+    code = code1 || code2 || instruction::ILOAD(addr1, addr2);
+  if (Types.isCharacterTy(tid1))
+    code = code1 || code2 || instruction::CHLOAD(addr1, addr2);
+  if (Types.isFloatTy(tid1))
+    code = code1 || code2 || instruction::FLOAD(addr1, addr2);
   //std::cout << "exit " << addr1 << " " << addr2 << " end!" <<  "\n";
   DEBUG_EXIT();
   return code;
@@ -172,24 +177,12 @@ antlrcpp::Any CodeGenVisitor::visitWhileStmt(AslParser::WhileStmtContext *ctx) {
   std::string           addr1 = codAtsE1.addr;
   std::string           offs1 = codAtsE1.offs;
   instructionList &     code1 = codAtsE1.code;
-  TypesMgr::TypeId tid1 = getTypeDecor(ctx->expr());
+  //TypesMgr::TypeId tid1 = getTypeDecor(ctx->expr());
+  instructionList &&   code2 = visit(ctx->statements());   // primer stmt, ctx->statements
 
-  //std::cout << "visitWhileStmt Addr & offset" << addr1 << " " << offs1 << " end!" <<  "\n";
-  //std::cout << "visitWhileStmt type: bool?" << Types.to_string(tid1) << " end!" <<  "\n";
-
-  instructionList &&   code3 = visit(ctx->statements());   // primer stmt, ctx->statements
-  //std::cout << "Check size" << ctx->statements().size() << " end!" <<  "\n";
-
-  CodeAttribs     && codAtsE2 = visit(ctx->expr());
-  std::string           addr2 = codAtsE2.addr;
-  std::string           offs2 = codAtsE2.offs;
-  instructionList &     code2 = codAtsE2.code;
-  //TypesMgr::TypeId tid2 = getTypeDecor(ctx->expr());
-
-  //std::cout << "visitAssignStmt2 " << addr2 << " " << offs2 << " end!" <<  "\n";
-  //std::cout << "visitAssignStmt2 " << Types.to_string(tid2) << " end!" <<  "\n";
-
-  code = code1 || code2 || instruction::LOAD(addr1, addr2);
+  std::string label = "while"+codeCounters.newLabelWHILE();
+  std::string labelEnd = "end"+label;
+  code =  instruction::LABEL(label) || code1 || instruction::FJUMP(addr1, labelEnd) || code2 || instruction::UJUMP(label) || instruction::LABEL(labelEnd);
   //std::cout << "exit " << addr1 << " " << addr2 << " end!" <<  "\n";
   DEBUG_EXIT();
   return code;
@@ -458,7 +451,15 @@ antlrcpp::Any CodeGenVisitor::visitValue(AslParser::ValueContext *ctx) {
   DEBUG_ENTER();
   instructionList code;
   std::string temp = "%"+codeCounters.newTEMP();
-  code = instruction::ILOAD(temp, ctx->getText());
+  if (ctx->INTVAL())
+    code = instruction::ILOAD(temp, ctx->getText());
+  else if (ctx->BOOLVAL())
+    code = instruction::LOAD(temp, ctx->getText() == "true" ? "1" : "0");
+  else if (ctx->FLOATVAL())
+    code = instruction::FLOAD(temp, ctx->getText());
+  else if (ctx->CHARVAL())
+    code = instruction::CHLOAD(temp, ctx->getText().substr(1, ctx->getText().size()-2));
+    
   CodeAttribs codAts(temp, "", code);
   DEBUG_EXIT();
   return codAts;
