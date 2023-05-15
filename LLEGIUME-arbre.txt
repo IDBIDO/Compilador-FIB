@@ -100,3 +100,8 @@ CodeGenVisitor: will declare visit methods for nodes related to instructions and
 
 chmod +x tvm-linux 
 ./tvm-linux ../asl/tvm1.t
+
+
+//
+./asl ../examples/jp_genc_04.asl > code.t
+../tvm/tvm code.t < ../examples/jp_genc_04.in
