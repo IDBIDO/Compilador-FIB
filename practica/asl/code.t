@@ -8,40 +8,44 @@ function f
   vars
     x integer
     y boolean
-    z array<10,integer> 10
+    z integer 10
   endvars
 
-     %1 = 67
-     %2 = a + %1
-     z = %2
-     %3 = 34
-     x = %3
-     %4 = 56
-     %5 = 9
-     %6 = z[%5]
-     %7 = %4 + %6
-     z = %7
-     %8 = 3
-     %9 = z[%8]
-     %12 = float %9
-     %11 = %12 <=. b
-     %10 = not %11
-     ifFalse %10 goto else1
-     %13 = 78
-     x = %13
+     %1 = 9
+     %3 = 67
+     %4 = a + %3
+     z[%1] = %4
+     %6 = 34
+     x = %6
+     %7 = 3
+     %9 = 56
+     %10 = 9
+     %11 = z[%10]
+     %12 = %9 + %11
+     z[%7] = %12
+     writef b
+     writes "\n"
+     %13 = 3
+     %14 = z[%13]
+     %17 = float %14
+     %16 = %17 <=. b
+     %15 = not %16
+     ifFalse %15 goto else1
+     %19 = 78
+     x = %19
      writef b
      writes "\n"
      goto endif1
   label else1 :
-     %14 = 99
-     x = %14
+     %21 = 99
+     x = %21
   label endif1 :
-     %15 = 3
-     %16 = z[%15]
-     writei %16
+     %22 = 3
+     %23 = z[%22]
+     writei %23
      writes "\n"
-     %17 = 1
-     _result = %17
+     %24 = 1
+     _result = %24
      return
 endfunction
 
@@ -55,9 +59,9 @@ function fz
      %3 = r <= %1
      %2 = not %3
      ifFalse %2 goto endwhile1
-     %4 = 1
-     %5 = r - %4
-     r = %5
+     %5 = 1
+     %6 = r - %5
+     r = %6
      goto while1
   label endwhile1 :
      return
@@ -70,21 +74,21 @@ function main
 
      %1 = 3
      %2 = 2
+     %3 = float %2
      pushparam 
      pushparam %1
-     pushparam %2
+     pushparam %3
      call f
      popparam 
-     popparam 
-     popparam %3
-     ifFalse %3 goto endif1
-     %4 = 3.7
-     %6 = float a
-     %5 = %6 +. %4
-     %7 = 4
-     %9 = float %7
-     %8 = %5 +. %9
-     writef %8
+     popparam %4
+     ifFalse %4 goto endif1
+     %5 = 3.7
+     %7 = float a
+     %6 = %7 +. %5
+     %8 = 4
+     %10 = float %8
+     %9 = %6 +. %10
+     writef %9
      writes "\n"
   label endif1 :
      return
