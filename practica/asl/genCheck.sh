@@ -18,7 +18,7 @@ function check_genc_example() {
     rm -f tmp.diff
 }
 
-read num
+#read num
 
 ########### check all 'jp_genc' examples
 echo ""
