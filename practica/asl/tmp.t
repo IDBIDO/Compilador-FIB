@@ -29,48 +29,48 @@ function sort
      %2 = 0
      i = %2
   label while2 :
-     %4 = 20
-     %5 = 1
-     %6 = %4 - %5
-     %7 = i < %6
-     ifFalse %7 goto endwhile2
+     %3 = 20
+     %4 = 1
+     %5 = %3 - %4
+     %6 = i < %5
+     ifFalse %6 goto endwhile2
      jmin = i
-     %12 = 1
-     %13 = i + %12
-     j = %13
+     %10 = 1
+     %11 = i + %10
+     j = %11
   label while1 :
-     %15 = 20
-     %16 = j < %15
-     ifFalse %16 goto endwhile1
-     %19 = v
-     %18 = %19[j]
-     %21 = v
-     %20 = %21[jmin]
-     %22 = %18 <. %20
-     ifFalse %22 goto endif1
+     %12 = 20
+     %13 = j < %12
+     ifFalse %13 goto endwhile1
+     %16 = v
+     %15 = %16[j]
+     %18 = v
+     %17 = %18[jmin]
+     %19 = %15 <. %17
+     ifFalse %19 goto endif1
      jmin = j
   label endif1 :
-     %27 = 1
-     %28 = j + %27
-     j = %28
+     %23 = 1
+     %24 = j + %23
+     j = %24
      goto while1
   label endwhile1 :
-     %31 = jmin == i
-     %30 = not %31
-     ifFalse %30 goto endif2
-     %34 = v
-     %33 = %34[i]
-     aux = %33
-     %36 = v
-     %38 = v
-     %37 = %38[jmin]
-     %36[i] = %37
-     %39 = v
-     %39[jmin] = aux
+     %26 = jmin == i
+     %25 = not %26
+     ifFalse %25 goto endif2
+     %29 = v
+     %28 = %29[i]
+     aux = %28
+     %30 = v
+     %32 = v
+     %31 = %32[jmin]
+     %30[i] = %31
+     %33 = v
+     %33[jmin] = aux
   label endif2 :
-     %41 = 1
-     %42 = i + %41
-     i = %42
+     %35 = 1
+     %36 = i + %35
+     i = %36
      goto while2
   label endwhile2 :
      return
@@ -88,25 +88,25 @@ function evenPositivesAndSort
      %2 = 0
      i = %2
   label while1 :
-     %4 = 20
-     %5 = i < %4
-     ifFalse %5 goto endwhile1
-     %8 = v
-     %7 = %8[i]
-     %9 = 0
-     %12 = float %9
-     %11 = %7 <=. %12
-     %10 = not %11
-     ifFalse %10 goto endif1
-     %13 = v
+     %3 = 20
+     %4 = i < %3
+     ifFalse %4 goto endwhile1
+     %7 = v
+     %6 = %7[i]
+     %8 = 0
+     %11 = float %8
+     %10 = %6 <=. %11
+     %9 = not %10
+     ifFalse %9 goto endif1
+     %12 = v
      pushparam 
      call one
-     popparam %14
-     %13[i] = %14
+     popparam %13
+     %12[i] = %13
   label endif1 :
-     %16 = 1
-     %17 = i + %16
-     i = %17
+     %15 = 1
+     %16 = i + %15
+     i = %16
      goto while1
   label endwhile1 :
      pushparam v
@@ -124,49 +124,49 @@ function main
      %2 = 0
      i = %2
   label while1 :
-     %4 = 20
-     %5 = i < %4
-     ifFalse %5 goto endwhile1
-     readf %8
-     af[i] = %8
-     %10 = 1
-     %11 = i + %10
-     i = %11
+     %3 = 20
+     %4 = i < %3
+     ifFalse %4 goto endwhile1
+     readf %7
+     af[i] = %7
+     %9 = 1
+     %10 = i + %9
+     i = %10
      goto while1
   label endwhile1 :
-     %13 = &af
-     pushparam %13
+     %11 = &af
+     pushparam %11
      call evenPositivesAndSort
      popparam 
-     %15 = 0
-     i = %15
+     %13 = 0
+     i = %13
   label while2 :
-     %17 = 20
-     %18 = i < %17
-     ifFalse %18 goto endwhile2
-     %20 = af[i]
+     %14 = 20
+     %15 = i < %14
+     ifFalse %15 goto endwhile2
+     %17 = af[i]
      pushparam 
      call one
-     popparam %21
-     %23 = %20 ==. %21
-     %22 = not %23
-     ifFalse %22 goto else1
-     %24 = af[i]
-     writef %24
-     %25 = ' '
-     writec %25
-     %27 = 1
-     %28 = i + %27
-     i = %28
+     popparam %18
+     %20 = %17 ==. %18
+     %19 = not %20
+     ifFalse %19 goto else1
+     %21 = af[i]
+     writef %21
+     %22 = ' '
+     writec %22
+     %24 = 1
+     %25 = i + %24
+     i = %25
      goto endif1
   label else1 :
-     %30 = '\n'
-     writec %30
+     %26 = '\n'
+     writec %26
   label endif1 :
      goto while2
   label endwhile2 :
-     %31 = '\n'
-     writec %31
+     %27 = '\n'
+     writec %27
      return
 endfunction
 
