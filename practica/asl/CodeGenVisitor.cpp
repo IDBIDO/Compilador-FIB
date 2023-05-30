@@ -87,13 +87,24 @@ antlrcpp::Any CodeGenVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   subroutine subr(ctx->ID()->getText());    // construir subrutina dado ID
   codeCounters.reset();
   
+  //return values
   if (ctx->type() && ctx->type()->simple_type())
     subr.add_param("_result", Types.to_string(getTypeDecor(ctx->type()->simple_type())), false);
   else if (ctx->type() && ctx->type()->array_type())
     subr.add_param("_result", Types.to_string(getTypeDecor(ctx->type()->array_type())), false);
-  for (uint i= 0; i< ctx->params()->ID().size(); ++i)
-    subr.add_param(ctx->params()->ID(i)->getText(), Types.to_string(getTypeDecor(ctx->params()->type(i))), false);//true 4 arrays
 
+  //add param
+    for (uint i = 0; i < ctx->params()->ID().size(); ++i) {
+    TypesMgr::TypeId tCurrent = getTypeDecor(ctx->params()->type(i));
+    if (Types.isArrayTy(tCurrent)) {
+      tCurrent = Types.getArrayElemType(tCurrent);
+      subr.add_param(ctx->params()->ID(i)->getText(), Types.to_string(tCurrent), true); // true 4 arrays
+
+    }
+    else subr.add_param(ctx->params()->ID(i)->getText(), Types.to_string(getTypeDecor(ctx->params()->type(i))), false); // true 4 arrays
+
+  }
+  
   std::vector<var> && lvars = visit(ctx->declarations());
   for (auto & onevar : lvars) {
     subr.add_var(onevar);
@@ -242,8 +253,6 @@ antlrcpp::Any CodeGenVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx)
       code = code || instruction::LOAD(addr1, temp);
     }
     else {
-
-
         code = code1 || code2 || instruction::XLOAD(addr1, offs1, addr2);
     }
   }
@@ -489,22 +498,30 @@ antlrcpp::Any CodeGenVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx) {
 
 // ident ('[' expr ']')
 antlrcpp::Any CodeGenVisitor::visitArray_acess(AslParser::Array_acessContext *ctx) {
+
   DEBUG_ENTER();
-    CodeAttribs && codAts1 = visit(ctx->ident());
-    instructionList& code1 = codAts1.code;
-
-    CodeAttribs&& codAts2 = visit(ctx-> expr());
-    instructionList& code2 = codAts2.code;
-
-    code1 = code1 || code2;
-
-    std::string temp = "%"+codeCounters.newTEMP();
-    // append array acces instruction
-    code1 = code1 || instruction::LOADX(temp, codAts1.addr, codAts2.addr);
-    codAts1.addr = temp;
-
+  instructionList code;
+  std::string temp = "%"+codeCounters.newTEMP();
+  CodeAttribs && codId = visit(ctx->ident());
+  std::string         addr1 = codId.addr;
+  instructionList &   code1 = codId.code;
+  CodeAttribs && codE = visit(ctx->expr());
+  std::string         addr2 = codE.addr;
+  instructionList &   code2 = codE.code;
+  code = code1 || code2;
+  if(Symbols.isParameterClass(ctx->ident()->getText())) {   // es una variable que se ha pasado como parametro
+    // en este caso, lo que se ha pasadoes un puntero que apunta al vecto
+    // hacemos primero el load par
+    std::string temp2 = "%"+codeCounters.newTEMP();
+    code = code || instruction::LOAD(temp2, addr1) || instruction::LOADX(temp, temp2, addr2);
+  }
+  else {
+    code = code || instruction::LOADX(temp, addr1, addr2);
+  }
+  CodeAttribs codAts(temp, "", code);
   DEBUG_EXIT();
-  return codAts1;
+  return codAts;
+
 }
 
 

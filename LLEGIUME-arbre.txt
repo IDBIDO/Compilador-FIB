@@ -103,5 +103,6 @@ chmod +x tvm-linux
 
 
 //
-./asl ../examples/jp_genc_06.asl > code.t
-../tvm/tvm code.t < ../examples/jp_genc_06.in
+./asl ../examples/jp_genc_07.asl > code.t
+../tvm/tvm code.t < ../examples/jp_genc_07.in
+
