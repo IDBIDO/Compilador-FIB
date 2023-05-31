@@ -190,8 +190,20 @@ antlrcpp::Any CodeGenVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx)
   instructionList &     code2 = codAtsE2.code;
   TypesMgr::TypeId tid2 = getTypeDecor(ctx->expr());
 
-
+  code = code1 || code2;
   if (Types.isArrayTy(tid1) and Types.isArrayTy(tid2)) {    // tipo array
+
+
+    if (not Symbols.isLocalVarClass(addr1)) {
+      std::string t1 = "%"+codeCounters.newTEMP();
+      code = code || instruction::LOAD(t1, addr1);
+      addr1 = t1;
+    }
+    if (not Symbols.isLocalVarClass(addr2)) {
+      std::string t2 = "%"+codeCounters.newTEMP();
+      code = code || instruction::LOAD(t2, addr2);
+      addr2 = t2;
+    }
     // copiar array to array
     // int i = 0;
     // int size = t1.size()
@@ -210,27 +222,27 @@ antlrcpp::Any CodeGenVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx)
 
     // labels
     std::string label = codeCounters.newLabelWHILE();
-    std::string labelWhile = "while" + label;
-    std::string labelEndWhile = "endWhile" + label;
+    std::string labelCpArray = "cpArray" + label;
+    std::string labelEndCpArray = "endCpArray" + label;
 
-    code = code || code1 || 
+    code = code ||
       // dar valor a var entorno
-      instruction::ILOAD(i,"0") ||    // i = 0
-		  instruction::ILOAD(size,std::to_string(Types.getArraySize(tid1)))  ||   // size = tid1.size()
-		  instruction::ILOAD(inc,"1")   ||    // inc = 1
+      instruction::ILOAD(i,"0")                                             || // i = 0
+		  instruction::ILOAD(size,std::to_string(Types.getArraySize(tid1))) || // size = tid1.size()
+		  instruction::ILOAD(inc,"1")                                       || // inc = 1
 
       // bucle no parara hasta i < size = false
-      instruction::LABEL(labelWhile);  // fijar LABEL While 
-      instruction::LT(comp, i, size);     // comp = i < size
-      instruction::FJUMP(comp, labelEndWhile);   // if i >= size, end while
+      instruction::LABEL(labelCpArray)                                      || // fijar LABEL While
+      instruction::LT(comp, i, size)                                        || // comp = i < size
+      instruction::FJUMP(comp, labelEndCpArray)                             || // if i >= size, end while
 
       // modificar valor 
-      instruction::LOADX(arrayValue, addr2, i);   // arrayValue = addr2[i]
-      instruction::XLOAD(addr1, i, arrayValue);   // addr1[i] = arrayValue
-      instruction::ADD(i, i, inc);    // i = i + inc(1)
+      instruction::LOADX(arrayValue, addr2, i)                              || // arrayValue = addr2[i]
+      instruction::XLOAD(addr1, i, arrayValue)                              || // addr1[i] = arrayValue
+      instruction::ADD(i, i, inc)                                           || // i = i + inc(1)
 
-      instruction::UJUMP(labelWhile);   // jump to while ini
-      instruction::LABEL(labelEndWhile);
+      instruction::UJUMP(labelCpArray)                                      || // jump to while ini
+      instruction::LABEL(labelEndCpArray);
     
   } else {
 
