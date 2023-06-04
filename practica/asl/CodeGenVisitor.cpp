@@ -109,8 +109,23 @@ antlrcpp::Any CodeGenVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   for (auto & onevar : lvars) {
     subr.add_var(onevar);
   }
+
+  TypesMgr::TypeId t = Types.createVoidTy();
+  if(ctx->type()){
+    visit(ctx->type());
+    if (ctx->type()->simple_type())     t = getTypeDecor(ctx->type()->simple_type());
+    else t = getTypeDecor(ctx->type()->array_type());
+  }
+  //std::cout << "setCurrentFunctionTy: " << Types.to_string_basic(t) << "\n";
+  setCurrentFunctionTy(t);
+
   instructionList && code = visit(ctx->statements());
-  code = code || instruction(instruction::RETURN()); //return para main
+  
+  
+
+  //TypesMgr::TypeId
+  code = code || instruction::RETURN();
+  //code = code || instruction(instruction::RETURN()); //return para main
   subr.set_instructions(code);
   Symbols.popScope();
   DEBUG_EXIT();
@@ -119,14 +134,35 @@ antlrcpp::Any CodeGenVisitor::visitFunction(AslParser::FunctionContext *ctx) {
 
 antlrcpp::Any CodeGenVisitor::visitReturnStmt(AslParser::ReturnStmtContext *ctx) {
   DEBUG_ENTER();
+    
   instructionList code;
+  TypesMgr::TypeId fType = getCurrentFunctionTy();
+  
+  TypesMgr::TypeId tid1 = getTypeDecor(ctx->expr());
   if (ctx->expr()){
+    
     CodeAttribs     && codAtsE1 = visit(ctx->expr());
     std::string           addr1 = codAtsE1.addr;
     std::string           offs1 = codAtsE1.offs;
     instructionList &     code1 = codAtsE1.code;
+
     //TypesMgr::TypeId tid1 = getTypeDecor(ctx->expr());
-    code = code1 || instruction::LOAD("_result",addr1);
+    //TypesMgr::TypeId fReturnType = Types.getFuncReturnType()
+      /*
+      code = code1 || code2;
+      std::string temp = "%"+codeCounters.newTEMP();
+      if (Types.isFloatTy(tid1) and Types.isIntegerTy(tid2)) {
+        code = code || instruction::FLOAT(temp,addr2);
+      } else temp = addr2;
+
+      code = code || instruction::LOAD(addr1, temp);
+      */
+     code = code || code1;
+      std::string temp = "%"+codeCounters.newTEMP();
+     if (Types.isFloatTy(fType) and Types.isIntegerTy(tid1)) {
+       code = code || instruction::FLOAT(temp,addr1) || instruction::LOAD("_result",temp);
+     } 
+     else code = code || instruction::LOAD("_result",addr1);
   }
   code = code || instruction::RETURN();   // test 13-> sino no sale del bucle cuando hace return
   DEBUG_EXIT();
@@ -168,7 +204,9 @@ antlrcpp::Any CodeGenVisitor::visitVariable_decl(AslParser::Variable_declContext
 antlrcpp::Any CodeGenVisitor::visitStatements(AslParser::StatementsContext *ctx) {
   DEBUG_ENTER();
   instructionList code;
-  for (auto stCtx : ctx->statement()) code = code || visit(stCtx);
+  for (auto stCtx : ctx->statement()) {
+    code = code || visit(stCtx);
+  }
   DEBUG_EXIT();
   return code;
 }
@@ -346,8 +384,8 @@ antlrcpp::Any CodeGenVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
       code = code || instruction::FLOAT(temp,addr);
       addr = temp;
     } // ARRAY AS PARAMETER(THE ADRESS IS NEEDED)
-    else if(Types.isArrayTy(p) /*and not Symbols.isParameterClass(ctx->expr(i)->getText())*/){
-      std::string temp = "%"+codeCounters.newTEMP();
+    else if(Types.isArrayTy(p) and not Symbols.isParameterClass(ctx->expr(i)->getText())){  // TEST 14-> isParameterClass cuando se llama 
+      std::string temp = "%"+codeCounters.newTEMP();                                        // vector v, func1(v1) { func2(v1) } -> en la llamada func2(v1) no hay que pasar el adreess de &v1, sino sirectament v1
       code = code || instruction::ALOAD(temp,addr);
       addr = temp;
     }
@@ -394,7 +432,7 @@ antlrcpp::Any CodeGenVisitor::visitFunction_call(AslParser::Function_callContext
     TypesMgr::TypeId tParam = getTypeDecor(ctx->expr(i));         // param type of function
     TypesMgr::TypeId tCheck = Types.getParameterType(tFunc, i);     // var type passed
 
-    if (Types.isArrayTy(tCheck)) {
+    if (Types.isArrayTy(tCheck) and not Symbols.isParameterClass(ctx->expr(i)->getText()) ) {
       std::string temp = "%"+codeCounters.newTEMP();
       code = code || instruction::ALOAD(temp, addr);
       codepush = codepush || instruction::PUSH(temp);
