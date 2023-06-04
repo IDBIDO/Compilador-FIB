@@ -128,6 +128,7 @@ antlrcpp::Any CodeGenVisitor::visitReturnStmt(AslParser::ReturnStmtContext *ctx)
     //TypesMgr::TypeId tid1 = getTypeDecor(ctx->expr());
     code = code1 || instruction::LOAD("_result",addr1);
   }
+  code = code || instruction::RETURN();   // test 13-> sino no sale del bucle cuando hace return
   DEBUG_EXIT();
   return code;
 }
@@ -428,6 +429,7 @@ antlrcpp::Any CodeGenVisitor::visitReadStmt(AslParser::ReadStmtContext *ctx) {
   if (Types.isFloatTy(tid1)) {
     code = code || instruction::READF(temp);
   }
+  else if(Types.isCharacterTy(tid1)) code = code || instruction::READC(temp);
   else {
     code = code || instruction::READI(temp);
   }

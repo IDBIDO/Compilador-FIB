@@ -1,5 +1,5 @@
 
-// Generated from Asl.g4 by ANTLR 4.9.2
+// Generated from Asl.g4 by ANTLR 4.7.2
 
 #pragma once
 
@@ -22,7 +22,7 @@ public:
     CHARVAL = 48, STRING = 49, COMMENT = 50, WS = 51
   };
 
-  explicit AslLexer(antlr4::CharStream *input);
+  AslLexer(antlr4::CharStream *input);
   ~AslLexer();
 
   virtual std::string getGrammarFileName() const override;

@@ -103,8 +103,8 @@ chmod +x tvm-linux
 
 
 //
-./asl ../examples/jp_genc_07.asl > code.t
-../tvm/tvm code.t < ../examples/jp_genc_07.in
+./asl ../examples/jp_genc_13.asl > code.t
+../tvm/tvm code.t < ../examples/jp_genc_13.in
 
   DEBUG_ENTER();
   instructionList code;
