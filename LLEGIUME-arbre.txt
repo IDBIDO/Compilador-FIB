@@ -102,43 +102,9 @@ chmod +x tvm-linux
 ./tvm-linux ../asl/tvm1.t
 
 
+1.  make antlr
+2.  make 
+
 //
 ./asl ../examples/jp_genc_13.asl > code.t
 ../tvm/tvm code.t < ../examples/jp_genc_13.in
-
-  DEBUG_ENTER();
-  instructionList code;
-  instructionList ppush;
-  instructionList ppop;
-  std::vector<TypesMgr::TypeId> ptypes = Types.getFuncParamsTypes(getTypeDecor(ctx->ident()));
-
-  for (uint i = 0; i< ctx->expr().size(); ++i){
-    CodeAttribs     && codAtsE = visit(ctx->expr(i));
-    std::string          addr1 = codAtsE.addr;
-    instructionList &    code1 = codAtsE.code;
-  
-    code = code || code1; // param
-
-    // check param type 
-    TypesMgr::TypeId tParam = getTypeDecor(ctx->expr(i));  // param type
-    TypesMgr::TypeId tFuncParam = ptypes[i];      // func param type
-    if (Types.isIntegerTy(tParam) and Types.isFloatTy(tFuncParam)) {
-      std::string temp = "%"+codeCounters.newTEMP();
-      code = code || instruction::FLOAT(temp, addr1);
-      ppush = ppush || instruction::PUSH(temp);       // push transform (int->float)
-    }
-    else {
-      ppush = ppush || instruction::PUSH(addr1); 
-      ppop = ppop || instruction::POP();
-    }
-  }
-  code = code || instruction::PUSH() || ppush;
-  std::string name = ctx->ident()->getText();
-  code = code || instruction::CALL(name);
-
-  std::string temp = "%"+codeCounters.newTEMP();  // get the return value
-  code = code || ppop || instruction::POP(temp);
-    
-  CodeAttribs codAts(temp, "", code);
-  DEBUG_EXIT();
-  return codAts; //ret tooda
