@@ -416,7 +416,7 @@ antlrcpp::Any TypeCheckVisitor::visitIdent(AslParser::IdentContext *ctx) {
   return 0;
 }
 
-// op=(SUB|PLUS|NOT) expr 
+// op=(SUB|PLUS|NOT) expr
 antlrcpp::Any TypeCheckVisitor:: visitUnary(AslParser::UnaryContext *ctx) {
   DEBUG_ENTER();
   //while(1) {}
@@ -424,7 +424,7 @@ antlrcpp::Any TypeCheckVisitor:: visitUnary(AslParser::UnaryContext *ctx) {
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr());
 
   if (ctx->NOT()) { // expr es booleano
-    if (not Types.isErrorTy(t1) and not Types.isBooleanTy(t1)) 
+    if (not Types.isErrorTy(t1) and not Types.isBooleanTy(t1))
       Errors.incompatibleOperator(ctx->op);
 
     t1 = Types.createBooleanTy();
@@ -436,9 +436,9 @@ antlrcpp::Any TypeCheckVisitor:: visitUnary(AslParser::UnaryContext *ctx) {
 
     if (Types.isFloatTy(t1)) t1 = Types.createFloatTy();
     else  t1 = Types.createIntegerTy();
-    
+
   }
-  
+
   putTypeDecor(ctx, t1);
   putIsLValueDecor(ctx, false);
 
@@ -468,20 +468,20 @@ antlrcpp::Any TypeCheckVisitor::visitFunction_call(AslParser::Function_callConte
     if(Types.getNumOfParameters(tID) != ctx->expr().size()) {
       Errors.numberOfParameters(ctx->ident());
     }
-    else {
     for(uint i = 0; i < ctx->expr().size(); ++i){
       //while(1);
       visit(ctx->expr(i));
-      TypesMgr::TypeId t1 = Types.getParameterType(tID, i);
-      TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(i));
-      
-      //std::cout << "t1 " << Types.to_string_basic(t1) << "\n";
-      //std::cout << "t2 " << Types.to_string_basic(t2) << "\n";
-      if(not(Types.isFloatTy(t1) and Types.isIntegerTy(t2))
-        and not Types.isErrorTy(t1) and not Types.isErrorTy(t2)){
-        if(not Types.equalTypes(t1,t2)) Errors.incompatibleParameter(ctx->expr(i),i+1,ctx);
-      }
-    }
+        if(Types.getNumOfParameters(tID) == ctx->expr().size()) {
+            TypesMgr::TypeId t1 = Types.getParameterType(tID, i);
+            TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(i));
+
+            //std::cout << "t1 " << Types.to_string_basic(t1) << "\n";
+            //std::cout << "t2 " << Types.to_string_basic(t2) << "\n";
+            if(not(Types.isFloatTy(t1) and Types.isIntegerTy(t2)) and not Types.isErrorTy(t1) and not Types.isErrorTy(t2)){
+                if(not Types.equalTypes(t1,t2))
+                    Errors.incompatibleParameter(ctx->expr(i),i+1,ctx);
+            }
+        }
     }
     
   } else {      // si no esta definida, igualmente se visita los parametros

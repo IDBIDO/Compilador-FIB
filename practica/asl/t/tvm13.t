@@ -15,7 +15,7 @@ function read_chars
      %4 = i < %3
      ifFalse %4 goto endwhile1
      %6 = a
-     readi %7
+     readc %7
      %6[i] = %7
      %9 = a
      %8 = %9[i]
@@ -29,11 +29,13 @@ function read_chars
      goto endif1
   label else1 :
      _result = i
+     return
   label endif1 :
      goto while1
   label endwhile1 :
-     %16 = 10
-     _result = %16
+     %17 = 10
+     _result = %17
+     return
      return
 endfunction
 
@@ -132,6 +134,7 @@ function write_consonants
      %23 = float n
      %22 = %20 /. %23
      _result = %22
+     return
      return
 endfunction
 
